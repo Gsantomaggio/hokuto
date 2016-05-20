@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+erl -pa lib/amqp_client lib/rabbit_common/ebin lib/amqp_client/ebin -pa ebin  -eval 'task_executor:start_link()' -sname node"$1" -setcookie TASKCOOKIE
