@@ -6,11 +6,13 @@
   {applications,
    [kernel,
     stdlib,
-    cowboy
+    cowboy,
+    cowlib,
+    ranch
    ]},
   {env,[]},
   {modules, []},
-
+  {registered, [slides_app]},
   {maintainers, []},
   {licenses, []},
   {links, []}

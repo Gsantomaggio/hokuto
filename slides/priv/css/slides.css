@@ -1,0 +1,48 @@
+body {
+    background-color: #363636;
+    color: #F6FACC;
+    height: 100%;
+}
+
+h1 {
+    text-indent: 50px;
+    letter-spacing: 3px;
+    line-height: 2.5;
+}
+
+h2 {
+    text-indent: 10px;
+    letter-spacing: 2px;
+    line-height: 2.5;
+}
+#container {
+    position:relative;
+    width:80%;
+    height:60%;
+
+    margin: 0 auto;
+    border: 1px solid #5E82A2;
+}
+
+#container_info {
+    position:relative;
+    width:80%;
+    height:60%;
+
+    margin: 0 auto;
+    border: 1px solid #5E82A2;
+}
+
+
+
+.one {
+    display: inline-block
+
+}
+
+.two {
+    width: 30%;
+    float: left;
+    border: 4px solid black;
+    
+}

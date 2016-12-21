@@ -1,44 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    
+    <!-- And the relevant JavaScript -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/unslider-min.js"></script> <!-- but with the right path! -->
+    <link rel="stylesheet" href="css/unslider.css">
+	<link rel="stylesheet" href="css/unslider-dots.css">
+	
+	<link rel="stylesheet" href="css/slides.css">
+    
+   
     <script type="text/javascript">
-			function ready() {
-				if (!!window.EventSource) {
-					setupEventSource();
-				} else {
-					document.getElementById('status').innerHTML =
-						"Sorry but your browser doesn't support the EventSource API";
-				}
-			}
+      
+      var websocket;
+      $(document).ready(init);
+      
+      function init() {
+          wsHost = "ws://" + window.location.host + "/websocket";
+          if(!("WebSocket" in window)){  
+              $('#status').append('<p><span style="color: red;">websockets are not supported </span></p>');
+              $("#navigation").hide();  
+          } else {
+              $('#status').append('<p>websockets are supported</p>');
+              connect(wsHost);
+          };
+              $("#connected").hide(); 	
+              $("#content").hide(); 	
+      };
+      function connect(wsHost)
+      {
+          websocket = new WebSocket(wsHost);
+          showScreen('<b>Connecting to: ' +  wsHost + '</b>'); 
+          websocket.onopen = function(evt) { onOpen(evt) }; 
+          websocket.onclose = function(evt) { onClose(evt) }; 
+          websocket.onmessage = function(evt) { onMessage(evt) }; 
+          websocket.onerror = function(evt) { onError(evt) }; 
+      };  
+      
+      function disconnect() {
+          websocket.close();
+      }; 
+      function toggle_connection(){
+          if(websocket.readyState == websocket.OPEN){
+              disconnect();
+          } else {
+              connect();
+          };
+      };
+      
+      function onOpen(evt) { 
+          showScreen('<span style="color: green;">CONNECTED </span>'); 
+          $("#connected").fadeIn('slow');
+          $("#content").fadeIn('slow');
+      };  
+      function onClose(evt) { 
+          showScreen('<span style="color: red;">DISCONNECTED </span>');
+      };  
+      function onMessage(evt) { 
+          showScreen('<span>' + evt.data+ '</span>'); 
+      };  
+      function onError(evt) {
+          showScreen('<span style="color: red;">ERROR: ' + evt.data+ '</span>');
+      };
+      function showScreen(txt) { 
+          $('#output').html(new Date() + " " + txt);
+      };
+      function clearScreen() 
+      { 
+          $('#output').html("");
+      };
+    </script>
 
-			function setupEventSource() {
-				var source = new EventSource('/eventsource');
-
-				source.addEventListener('message', function(event) {
-					addStatus("server sent the following: '" + event.data + "'");
-					}, false);
-
-					source.addEventListener('open', function(event) {
-						addStatus('eventsource connected.')
-					}, false);
-
-					source.addEventListener('error', function(event) {
-						if (event.eventPhase == EventSource.CLOSED) {
-							addStatus('eventsource was closed.')
-						}
-					}, false);
-			}
-
-			function addStatus(text) {
-				var date = new Date();
-				document.getElementById('status').innerHTML
-				= document.getElementById('status').innerHTML
-				+ date + ": " + text + "<br/>";
-			}
-		</script>
 </head>
-<body onload="ready();">
-Hi!
-<div id="status"></div>
+
+
+
+    <div id="container" class="banner">
+        <div class="default-slider">
+		  <ul>
+			<li><h1> 
+			<li> - Gabriele Santomaggio</li>
+			<li> - @gsantomaggio </li>
+			<li> - Working at Erlang Solutions - London </li>
+			<li> - RabbitMQ contributor/ stackoverflow supporter </li>
+			<li> - Co-author of RabbitMQ Cookbook </li>
+			</h1></li>
+
+
+
+			<li><h1> 
+			<li> - nonode@nohost (example)</li>
+			<li> - erl -sname (example) </li>   
+			<li> - Connect to other node </li>
+			<li> - .erlang.cookie </li>
+			<li> - epmd </li>
+
+
+			</h1></li>
+		</ul>
+		<script>$('.default-slider').unslider();</script>
+		</div>
+
+    </div>
+
+
+ <div id="container_info">
+      
+ <ul>
+			<li><h3> 
+			<li><div class="one" id="output"></div></li>
+			<li><div class="one" id="status"></div></li>
+			</h3></li>
+
+		</ul>
+
+
+      
+
+ </div>
+
+
+    <div id="navigation">
+
+
+      <div id="content">						
+	  </div>
+
+    </div>
+
+
 </body>
 </html>

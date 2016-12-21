@@ -17,13 +17,15 @@
 start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
         {'_', [
-            {"/slides", eventsource_handler, []},
-            {"/", cowboy_static, {priv_file, eventsource, "index.html"}}
-        ]}
+            {"/", cowboy_static, {priv_file, slides, "index.html"}},
+            {"/websocket", ws_handler, []},
+            {"/[...]", cowboy_static, {priv_dir, slides, "",
+                [{mimetypes, cow_mimetypes, all}]}}
+       ]}
     ]),
-    {ok, _} = cowboy:start_clear(http, 100, [{port, 8080}], #{
-        env => #{dispatch => Dispatch}
-    }),
+    {ok, _} = cowboy:start_http(http, 100, [{port, 8080}], [
+        {env, [{dispatch, Dispatch}]}
+    ]),
 
     slides_sup:start_link().
 

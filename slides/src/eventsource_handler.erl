@@ -1,20 +1,20 @@
-%% @doc EventSource emitter.
 -module(eventsource_handler).
 
--export([init/2]).
+-export([init/3]).
 -export([info/3]).
+-export([terminate/3]).
 
-init(Req0, Opts) ->
-    Req = cowboy_req:stream_reply(200, #{
-        <<"content-type">> => <<"text/event-stream">>
-    }, Req0),
+init(_Transport, Req, []) ->
+    Headers = [{<<"content-type">>, <<"text/event-stream">>}],
+    {ok, Req2} = cowboy_req:chunked_reply(200, Headers, Req),
     erlang:send_after(1000, self(), {message, "Tick"}),
-    {cowboy_loop, Req, Opts, 5000}.
+    {loop, Req2, undefined, 5000}.
 
-info({message, Msg}, Req, State) ->
-    cowboy_req:stream_body(["id: ", id(), "\ndata: ", Msg, "\n\n"], nofin, Req),
-    erlang:send_after(1000, self(), {message, "Tick"}),
-    {ok, Req, State}.
+info({message, _Msg}, Req, State) ->
+    % ok = cowboy_req:chunk(["id: ", id(), "\ndata: ", Msg, "\n\n"], Req),
+    erlang:send_after(1000, self(), {message, [node() | nodes()]}),
+    {loop, Req, State}.
 
-id() ->
-    integer_to_list(erlang:unique_integer([positive, monotonic]), 16).
+terminate(_Reason, _Req, _State) ->
+    ok.
+
