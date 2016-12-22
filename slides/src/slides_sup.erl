@@ -28,9 +28,11 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    Procs = [],
-    {ok, {{one_for_one, 10, 10}, Procs}}.
-
+     RestartStrategy = {one_for_one, 10, 60},
+     ChildSpec = {server_info, {server_info, start_link, []},
+          permanent, brutal_kill, worker, [server_info]},
+     Children = [ChildSpec],
+     {ok, {RestartStrategy, Children}}.
 
 
 %%{ok, { {one_for_all, 0, 1}, []} }.

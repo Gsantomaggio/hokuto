@@ -8,26 +8,37 @@
 -export([websocket_terminate/3]).
 
 init({tcp, http}, _Req, _Opts) ->
-	{upgrade, protocol, cowboy_websocket}.
+    {upgrade, protocol, cowboy_websocket}.
 
 websocket_init(_TransportName, Req, _Opts) ->
-	erlang:start_timer(1000, self(), <<"Hello!">>),
-	{ok, Req, undefined_state}.
+    erlang:start_timer(1000, self(), <<"Init..">>),
+    {ok, Req, undefined_state}.
 
 websocket_handle(_Data, Req, State) ->
-	{ok, Req, State}.
+    {ok, Req, State}.
 
-format_node(Nodes) when Nodes =/= [] ->
-    io_lib:format("I am: ~w, other nodes: ~w", [node(),nodes()]);
-format_node(_Nodes) -> 
-    io_lib:format("I am: ~w", [node()]).
+
+to_json_item(Item) ->
+    {Node, {_State, Detail}} = Item,
+    jsx:encode([{<<"node">>, Node}, {<<"detail">>, Detail}]).
+to_json_array([]) -> [];
+to_json_array([H | T]) when T =/= [] ->
+    [[to_json_item(H) | <<",">>] | to_json_list(T)];
+to_json_array([H | T]) ->
+    [to_json_item(H) | to_json_list(T)].
+
+
+format_result(Replies, _BadNodes) ->
+    io_lib:format("[~s]", [to_json_array(Replies)]).
 
 
 websocket_info({timeout, _Ref, Msg}, Req, State) ->
-  	erlang:start_timer(1000, self(), format_node(nodes())),
-	{reply, {text, Msg}, Req, State};
+    {Replies, BadNodes} = gen_server:multi_call([node() | nodes()], server_info, {command, info, node()}, 20000),
+    % io:format("Node Replies ~p - Bad Nodes ~p ~n", [Replies, BadNodes]),
+    erlang:start_timer(2000, self(), format_result(Replies, BadNodes)),
+    {reply, {text, Msg}, Req, State};
 websocket_info(_Info, Req, State) ->
-	{ok, Req, State}.
+    {ok, Req, State}.
 
 websocket_terminate(_Reason, _Req, _State) ->
-	ok.
+    ok.

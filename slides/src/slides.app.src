@@ -8,7 +8,8 @@
     stdlib,
     cowboy,
     cowlib,
-    ranch
+    ranch,
+    jsx
    ]},
   {env,[]},
   {modules, []},

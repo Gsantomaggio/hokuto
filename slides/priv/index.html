@@ -64,8 +64,17 @@
       function onError(evt) {
           showScreen('<span style="color: red;">ERROR: ' + evt.data+ '</span>');
       };
+      function format_date(d){
+
+      	
+		var datestring = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
+	    d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+
+		return datestring;
+      }
+
       function showScreen(txt) { 
-          $('#output').html(new Date() + " " + txt);
+          $('#output').html("Cluster info: " + txt);
       };
       function clearScreen() 
       { 
@@ -81,11 +90,11 @@
         <div class="default-slider">
 		  <ul>
 			<li><h1> 
-			<li> - Gabriele Santomaggio</li>
-			<li> - @gsantomaggio </li>
+			<li> - Gabriele Santomaggio </li>
 			<li> - Working at Erlang Solutions - London </li>
 			<li> - RabbitMQ contributor/ stackoverflow supporter </li>
 			<li> - Co-author of RabbitMQ Cookbook </li>
+			<li> - @gsantomaggio </li>
 			</h1></li>
 
 
