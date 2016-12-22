@@ -21,11 +21,13 @@ websocket_handle(_Data, Req, State) ->
 to_json_item(Item) ->
     {Node, {_State, Detail}} = Item,
     jsx:encode([{<<"node">>, Node}, {<<"detail">>, Detail}]).
+
+
 to_json_array([]) -> [];
 to_json_array([H | T]) when T =/= [] ->
-    [[to_json_item(H) | <<",">>] | to_json_list(T)];
+    [[to_json_item(H) | <<",">>] | to_json_array(T)];
 to_json_array([H | T]) ->
-    [to_json_item(H) | to_json_list(T)].
+    [to_json_item(H) | to_json_array(T)].
 
 
 format_result(Replies, _BadNodes) ->
