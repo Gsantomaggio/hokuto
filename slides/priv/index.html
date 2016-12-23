@@ -2,16 +2,16 @@
 <html>
 <head>
 
-    
+
     <!-- And the relevant JavaScript -->
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/unslider-min.js"></script> <!-- but with the right path! -->
     <link rel="stylesheet" href="css/unslider.css">
-	<link rel="stylesheet" href="css/unslider-dots.css">
-	
-	<link rel="stylesheet" href="css/slides.css">
-    
-   
+    <link rel="stylesheet" href="css/unslider-dots.css">
+
+    <link rel="stylesheet" href="css/slides.css">
+
+
     <script type="text/javascript">
       
       var websocket;
@@ -59,7 +59,16 @@
           showScreen('<span style="color: red;">DISCONNECTED </span>');
       };  
       function onMessage(evt) { 
-          showScreen('<span>' + evt.data+ '</span>'); 
+           $('#nodes_table tbody').empty();
+           <!--console.log(evt.data);-->
+           var data = $.parseJSON(evt.data);
+           $.each(data, function(i, item) {
+             $('<tr>').html(
+             "<td>" + data[i].node + "</td><td>" + data[i].detail.total + "</td><td>" + data[i].detail.processes +"</td><td>" + data[i].detail.processes_used +"</td>"+
+             "<td>" +data[i].detail.system + "</td><td>" + data[i].detail.atom + "</td><td>" + data[i].detail.atom_used +"</td><td>" + data[i].detail.binary +"</td>"
+
+             ).appendTo('#nodes_body');
+            });
       };  
       function onError(evt) {
           showScreen('<span style="color: red;">ERROR: ' + evt.data+ '</span>');
@@ -73,71 +82,139 @@
 		return datestring;
       }
 
-      function showScreen(txt) { 
+      function showScreen(txt) {
+
+
           $('#output').html("Cluster info: " + txt);
       };
       function clearScreen() 
       { 
           $('#output').html("");
       };
+
+
     </script>
 
 </head>
 
 
-
-    <div id="container" class="banner">
-        <div class="default-slider">
-		  <ul>
-			<li><h1> 
-			<li> - Gabriele Santomaggio </li>
-			<li> - Working at Erlang Solutions - London </li>
-			<li> - RabbitMQ contributor/ stackoverflow supporter </li>
-			<li> - Co-author of RabbitMQ Cookbook </li>
-			<li> - @gsantomaggio </li>
-			</h1></li>
-
-
-
-			<li><h1> 
-			<li> - nonode@nohost (example)</li>
-			<li> - erl -sname (example) </li>   
-			<li> - Connect to other node </li>
-			<li> - .erlang.cookie </li>
-			<li> - epmd </li>
+<div id="container" class="banner">
+    <div class="default-slider">
+        <ul>
+            <li> <h1> Build a distributed application with BEAM </h1>
+            <h1>
+            <li> - Gabriele Santomaggio - @gsantomaggio</li>
+            <li> - Working at Erlang Solutions - London</li>
+            <li> - RabbitMQ contributor/ stackoverflow supporter</li>
+            <li> - Co-author of RabbitMQ Cookbook</li>
+            </h1>
+            </li>
 
 
-			</h1></li>
-		</ul>
-		<script>$('.default-slider').unslider();</script>
-		</div>
+            <li> <h1> Distributed Erlang - Base concepts </h1>
+            <h1>
+            <li> - erl -sname (example)</li>
+            <li> - Connect to other node</li>
+            <li> - .erlang.cookie</li>
+            <li> - epmd</li>
+            </h1></li>
 
+            <li> <h1> Distributed calls </h1>
+            <h1>
+            <li> - Synchronous distributed call </li>
+            <li> - Replies and Bad Nodes </li>
+            <li> - Time-out or not time-out this is the question</li>
+            <li> - Make a asynchronous distributed call </li>
+            </h1></li>
+
+            <li> <h1> Synchronous distributed call in this presentation </h1>
+            <h1>
+            <li> - Erlang-OTP</li>
+            <li> - gen_server </li>
+            <li> - gen_server:multi_call([node() | nodes()], server_info ...</li>
+            <li> - Read the response </li>
+            </h1></li>
+
+            <li> <h1> Add new feature </h1>
+            <h1>
+            <li> - Search example </li>
+            <li> - </li>
+            <li> - </li>
+            <li> - </li>
+            </h1></li>
+
+            <li> <h1> Nodes type family </h1>
+            <h1>
+            <li> - Same type </li>
+            <li> - Connect different families</li>
+            <li> - Standard TCP/UPD connections </li>
+            <li> - SSL and/or different cookie</li>
+            </h1></li>
+
+            <li> <h1> Nodes type family - Example</h1>
+            <h1>
+            <li>  </li>
+            <li> </li>
+            <li>  </li>
+            <li> </li>
+            </h1></li>
+  
+
+        </ul>
+        <script>$('.default-slider').unslider();</script>
     </div>
 
-
- <div id="container_info">
-      
- <ul>
-			<li><h3> 
-			<li><div class="one" id="output"></div></li>
-			<li><div class="one" id="status"></div></li>
-			</h3></li>
-
-		</ul>
+</div>
 
 
-      
+<div id="container_info">
 
- </div>
+<table id="nodes_table"> 
+<thead>
+ 
+    <tr>
+      <th>Node</th>
+      <th>Total</th>
+      <th>Processes</th>
+      <th>Processes Used</th>
+      <th>System</th>
+      <th>Atoms</th>
+      <th>Atoms Used</th>
+      <th>Binary</th>
+    </tr>
+  </thead>
+
+    <tbody id="nodes_body">  </tbody>
+</table>
+
+<!--     <ul>
+        <li><h3>
+
+        <li>
+            <table id="nodes_table"> <tbody id="nodes_body">  </tbody> </table>
+        </li>
+
+        <li>
+            <div class="one" id="output"></div>
+        </li>
+        <li>
+            <div class="one" id="status"></div>
+        </li>
+        </h3></li>
+
+    </ul>
+ -->
+
+</div>
 
 
-    <div id="navigation">
+<div id="navigation">
 
 
-      <div id="content">						
-	  </div>
-
+    <div id="content">
     </div>
+
+</div>
 
 
 </body>

@@ -79,7 +79,7 @@ init([]) ->
     {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
     {stop, Reason :: term(), NewState :: #state{}}).
 handle_call({command, info, _NodeFrom}, _From, State) ->
-    NewState = State#state{memory = erlang:memory()},
+     NewState = State#state{memory = erlang:memory()},
     {reply, NewState, State}.
 
 %%--------------------------------------------------------------------

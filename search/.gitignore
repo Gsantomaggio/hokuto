@@ -14,6 +14,3 @@ erl_crash.dump
 logs
 _build
 .idea
-kill.sh
-slides.iml
-rebar.lock

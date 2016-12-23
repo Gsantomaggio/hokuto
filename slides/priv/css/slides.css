@@ -35,14 +35,33 @@ h2 {
 
 
 
-.one {
-    display: inline-block
+/*<style>
+  table {
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid orange;
+    padding: 10px;
+    text-align: left;
+  }
+</style>
+*/
 
-}
-
-.two {
-    width: 30%;
-    float: left;
-    border: 4px solid black;
+<style>
+  table {
+    border-collapse: collapse;
     
-}
+  }
+  th, td {
+    border: 1px solid orange;
+    padding: 10px;
+    text-align: left;
+    font-size: 17px;
+  }
+  tr:nth-child(even) {
+    background-color: #525252;
+  }
+  tr:nth-child(odd) {
+    background-color: #363636;
+  }            
+</style>
