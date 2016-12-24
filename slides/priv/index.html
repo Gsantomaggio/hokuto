@@ -26,8 +26,7 @@
               $('#status').append('<p>websockets are supported</p>');
               connect(wsHost);
           };
-              $("#connected").hide(); 	
-              $("#content").hide(); 	
+              $("#container_info").hide(); 	
       };
       function connect(wsHost)
       {
@@ -51,28 +50,36 @@
       };
       
       function onOpen(evt) { 
-          showScreen('<span style="color: green;">CONNECTED </span>'); 
-          $("#connected").fadeIn('slow');
-          $("#content").fadeIn('slow');
+          $('#ws_status').text("OK");
+
       };  
       function onClose(evt) { 
-          showScreen('<span style="color: red;">DISCONNECTED </span>');
+          $('#ws_status').text("Disconnect");
       };  
       function onMessage(evt) { 
+           
            $('#nodes_table tbody').empty();
-           <!--console.log(evt.data);-->
            var data = $.parseJSON(evt.data);
            $.each(data, function(i, item) {
              $('<tr>').html(
              "<td>" + data[i].node + "</td><td>" + data[i].detail.total + "</td><td>" + data[i].detail.processes +"</td><td>" + data[i].detail.processes_used +"</td>"+
-             "<td>" +data[i].detail.system + "</td><td>" + data[i].detail.atom + "</td><td>" + data[i].detail.atom_used +"</td><td>" + data[i].detail.binary +"</td>"
+             "<td>" +data[i].detail.system + "</td><td>" + data[i].detail.atom_used +"</td><td>" + data[i].web_socket_connected +"</td>"
 
              ).appendTo('#nodes_body');
             });
+
+           var count = 0
+           for (i = 0; i < data.length; i++) {  
+               count += data[i].web_socket_connected;  
+            }
+          
+            $('#ws_count').text("Clients:" + count);
+            $("#container_info").fadeIn('slow');
+          
       };  
       function onError(evt) {
-          showScreen('<span style="color: red;">ERROR: ' + evt.data+ '</span>');
-      };
+          $('#ws_status').text("WS error:" + evt.data);
+     };
       function format_date(d){
 
       	
@@ -131,7 +138,7 @@
             <h1>
             <li> - Erlang-OTP</li>
             <li> - gen_server </li>
-            <li> - gen_server:multi_call([node() | nodes()], server_info ...</li>
+            <li> - gen_server:multi_call([node() | nodes()], server_info</li>
             <li> - Read the response </li>
             </h1></li>
 
@@ -163,58 +170,41 @@
         </ul>
         <script>$('.default-slider').unslider();</script>
     </div>
-
 </div>
+
 
 
 <div id="container_info">
+<div style="display: inline-block;">
+    <table id="nodes_table"> 
+    <thead>
+     
+        <tr>
+          <th>Node</th>
+          <th>Total</th>
+          <th>Processes</th>
+          <th>Processes Used</th>
+          <th>System</th>
+          <th>Atoms Used</th>
+          <th>Clients WS</th>
+        </tr>
+      </thead>
 
-<table id="nodes_table"> 
-<thead>
- 
-    <tr>
-      <th>Node</th>
-      <th>Total</th>
-      <th>Processes</th>
-      <th>Processes Used</th>
-      <th>System</th>
-      <th>Atoms</th>
-      <th>Atoms Used</th>
-      <th>Binary</th>
-    </tr>
-  </thead>
+        <tbody id="nodes_body">  </tbody>
+    </table>
+</div>
 
-    <tbody id="nodes_body">  </tbody>
-</table>
-
-<!--     <ul>
-        <li><h3>
-
-        <li>
-            <table id="nodes_table"> <tbody id="nodes_body">  </tbody> </table>
-        </li>
-
-        <li>
-            <div class="one" id="output"></div>
-        </li>
-        <li>
-            <div class="one" id="status"></div>
-        </li>
-        </h3></li>
-
-    </ul>
- -->
-
+<div style="display: inline-block; margin-left:auto; margin-right:0;vertical-align: top;">
+    <table id="ws_table"> 
+      <tr><td style="border: 1px solid yellow;background-color: #282828;"><span id="ws_status"></span></td></tr>
+      <tr><td style="border: 1px solid yellow;background-color: #282828;"><span id="ws_count"></span></td></tr>
+    </table>
 </div>
 
 
-<div id="navigation">
-
-
-    <div id="content">
-    </div>
 
 </div>
+
 
 
 </body>

@@ -24,7 +24,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {memory}).
+-record(state, {memory, web_socket_connected = 0}).
 
 %%%===================================================================
 %%% API
@@ -93,8 +93,13 @@ handle_call({command, info, _NodeFrom}, _From, State) ->
     {noreply, NewState :: #state{}} |
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-handle_cast(_Request, State) ->
-    {noreply, State}.
+handle_cast({new_client}, State) ->
+    NewState = State#state{web_socket_connected = State#state.web_socket_connected + 1},
+    {noreply, NewState};
+handle_cast({del_client}, State) ->
+    NewState = State#state{web_socket_connected = State#state.web_socket_connected - 1},
+    {noreply, NewState}.
+
 
 %%--------------------------------------------------------------------
 %% @private
