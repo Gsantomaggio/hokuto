@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 28. Dec 2016 17:19
 %%%-------------------------------------------------------------------
--module(json_utlis).
+-module(json_utils).
 -author("gabriele").
 
 %% API
