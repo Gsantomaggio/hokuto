@@ -28,7 +28,14 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, { {one_for_all, 0, 1}, []} }.
+    RestartStrategy = {one_for_one, 10, 60},
+    Server_Info = {server_info, {server_info, start_link, []},
+          permanent, brutal_kill, worker, [server_info]},
+    Mod_Search = {mod_search, {mod_search, start_link, []},
+          permanent, brutal_kill, worker, [mod_search]},
+    
+     Children = [Server_Info,Mod_Search],
+     {ok, {RestartStrategy, Children}}.
 
 %%====================================================================
 %% Internal functions

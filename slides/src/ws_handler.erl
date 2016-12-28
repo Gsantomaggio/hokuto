@@ -20,27 +20,25 @@ websocket_handle(_Data, Req, State) ->
     {ok, Req, State}.
 
 
+
 to_json_item(Item) ->
-    {Node, {_State, Detail, Ws}} = Item,
-    jsx:encode([{<<"node">>, Node}, {<<"detail">>, Detail},
-        {<<"web_socket_connected">>, Ws}]).
+    {Node, Detail} = Item,
+    case Detail of
+        {_State, Memory, Ws} ->
+            jsx:encode([{<<"node">>, Node}, {<<"memory">>, Memory},
+                {<<"web_socket_connected">>, Ws}]);
+        {_State, Memory} ->
+            jsx:encode([{<<"node">>, Node}, {<<"memory">>, Memory}])
+    end.
 
 
-to_json_array([]) -> [];
-to_json_array([H | T]) when T =/= [] ->
-    [[to_json_item(H) | <<",">>] | to_json_array(T)];
-to_json_array([H | T]) ->
-    [to_json_item(H) | to_json_array(T)].
-
-
-format_result(Replies, _BadNodes) ->
-    io_lib:format("[~s]", [to_json_array(Replies)]).
-
+to_json(Replies, _BadNodes) ->
+    io_lib:format("[~s]", [json_utlis:to_json_array(Replies, fun to_json_item/1)]).
 
 websocket_info({timeout, _Ref, Msg}, Req, State) ->
     {Replies, BadNodes} = gen_server:multi_call([node() | nodes()], server_info, {command, info, node()}, 20000),
 %%    io:format("Node Replies ~p - Bad Nodes ~p ~n", [Replies, BadNodes]),
-    erlang:start_timer(1000, self(), format_result(Replies, BadNodes)),
+    erlang:start_timer(1000, self(), to_json(Replies, BadNodes)),
     {reply, {text, Msg}, Req, State};
 websocket_info(_Info, Req, State) ->
     {ok, Req, State}.

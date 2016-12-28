@@ -27,6 +27,7 @@ start(_StartType, _StartArgs) ->
         {'_', [
             {"/", cowboy_static, {priv_file, slides, "index.html"}},
             {"/websocket", ws_handler, []},
+            {"/rest/search", rest_search, []},
             {"/[...]", cowboy_static, {priv_dir, slides, "",
                 [{mimetypes, cow_mimetypes, all}]}}
        ]}

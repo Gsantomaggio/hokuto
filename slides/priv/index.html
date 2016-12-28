@@ -62,15 +62,16 @@
            var data = $.parseJSON(evt.data);
            $.each(data, function(i, item) {
              $('<tr>').html(
-             "<td>" + data[i].node + "</td><td>" + data[i].detail.total + "</td><td>" + data[i].detail.processes +"</td><td>" + data[i].detail.processes_used +"</td>"+
-             "<td>" +data[i].detail.system + "</td><td>" + data[i].detail.atom_used +"</td><td>" + data[i].web_socket_connected +"</td>"
+             "<td>" + data[i].node + "</td><td>" + data[i].memory.total + "</td><td>" + data[i].memory.processes +"</td><td>" + data[i].memory.processes_used +"</td>"+
+             "<td>" +data[i].memory.system + "</td><td>" + data[i].memory.atom_used +"</td><td>" +((data[i]["web_socket_connected"] == undefined) ? "": data[i]["web_socket_connected"]) +"</td>"
 
              ).appendTo('#nodes_body');
             });
 
            var count = 0
-           for (i = 0; i < data.length; i++) {  
-               count += data[i].web_socket_connected;  
+           for (i = 0; i < data.length; i++) {
+               if (data[i]["web_socket_connected"] != undefined)
+                  count += data[i].web_socket_connected;  
             }
           
             $('#ws_count').text("Clients:" + count);
