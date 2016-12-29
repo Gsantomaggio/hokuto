@@ -24,7 +24,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {memory, web_socket_connected = 0}).
+-record(state, {memory, web_socket_connected = 0, total_web_sockets = 0}).
 
 %%%===================================================================
 %%% API
@@ -78,6 +78,7 @@ init([]) ->
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
     {stop, Reason :: term(), NewState :: #state{}}).
+
 handle_call({command, info, _NodeFrom}, _From, State) ->
     NewState = State#state{memory = erlang:memory()},
     {reply, NewState, State}.
@@ -94,7 +95,8 @@ handle_call({command, info, _NodeFrom}, _From, State) ->
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
 handle_cast({new_client}, State) ->
-    NewState = State#state{web_socket_connected = State#state.web_socket_connected + 1},
+    NewState = State#state{web_socket_connected = State#state.web_socket_connected + 1,
+        total_web_sockets = State#state.total_web_sockets + 1},
     {noreply, NewState};
 handle_cast({del_client}, State) ->
     NewState = State#state{web_socket_connected = State#state.web_socket_connected - 1},

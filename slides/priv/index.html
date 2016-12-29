@@ -5,7 +5,7 @@
 
     <!-- And the relevant JavaScript -->
     <script src="js/jquery-3.1.1.min.js"></script>
-    <script src="js/unslider-min.js"></script> <!-- but with the right path! -->
+    <script src="js/unslider-min.js"></script>
     <link rel="stylesheet" href="css/unslider.css">
     <link rel="stylesheet" href="css/unslider-dots.css">
 
@@ -20,13 +20,13 @@
       function init() {
           wsHost = "ws://" + window.location.host + "/websocket";
           if(!("WebSocket" in window)){  
-              $('#status').append('<p><span style="color: red;">websockets are not supported </span></p>');
+              $('#ws_status').text('websockets are not supported');
               $("#navigation").hide();  
           } else {
-              $('#status').append('<p>websockets are supported</p>');
+              $('#ws_status').text('<p>websockets are supported</p>');
               connect(wsHost);
           };
-              $("#container_info").hide(); 	
+              // $("#container_info").hide(); 	
       };
       function connect(wsHost)
       {
@@ -50,11 +50,11 @@
       };
       
       function onOpen(evt) { 
-          $('#ws_status').text("OK");
+          $('#ws_status').text("Websocket status: Connected");
 
       };  
       function onClose(evt) { 
-          $('#ws_status').text("Disconnect");
+          $('#ws_status').text("Websocket status: Disconnect");
       };  
       function onMessage(evt) { 
            
@@ -63,19 +63,27 @@
            $.each(data, function(i, item) {
              $('<tr>').html(
              "<td>" + data[i].node + "</td><td>" + data[i].memory.total + "</td><td>" + data[i].memory.processes +"</td><td>" + data[i].memory.processes_used +"</td>"+
-             "<td>" +data[i].memory.system + "</td><td>" + data[i].memory.atom_used +"</td><td>" +((data[i]["web_socket_connected"] == undefined) ? "": data[i]["web_socket_connected"]) +"</td>"
+             "<td>" +data[i].memory.system + "</td><td>" + data[i].memory.atom_used +"</td><td>" +((data[i]["web_socket_connected"] == undefined) ? "": data[i]["web_socket_connected"]) +"</td><td>" +((data[i]["total_web_sockets"] == undefined) ? "": data[i]["total_web_sockets"]) +"</td>"
 
              ).appendTo('#nodes_body');
             });
 
-           var count = 0
+           var ws_connected_count = 0
+           var ws_total_count = 0
            for (i = 0; i < data.length; i++) {
                if (data[i]["web_socket_connected"] != undefined)
-                  count += data[i].web_socket_connected;  
+                  ws_connected_count += data[i].web_socket_connected;  
+               if (data[i]["total_web_sockets"] != undefined)
+                  ws_total_count += data[i].total_web_sockets;  
+                  
             }
           
-            $('#ws_count').text("Clients:" + count);
-            $("#container_info").fadeIn('slow');
+            $('#ws_connected_count').text("Cluster active users: " + ws_connected_count);
+            $('#ws_total_count').text("Cluster total users:" + ws_total_count);
+            $('#cluster_nodes').text("Cluster total nodes:" + data.length);
+
+
+            // $("#container_info").fadeIn('slow');
           
       };  
       function onError(evt) {
@@ -105,73 +113,92 @@
 
 </head>
 
+<div id="container_info">
+    <table id="ws_table"> 
+      <tr>
+      <td style="border: 0px solid yellow;"><span id="ws_status"></span></td>
+      <td style="border: 0px solid yellow;"><span id="ws_connected_count"></span></td>
+      <td style="border: 0px solid yellow;"><span id="ws_total_count"></span></td>
+        <td style="border: 0px solid yellow;"><span id="cluster_nodes"></span></td>
+    
+      </tr>
+    </table>
+</div>
 
 <div id="container" class="banner">
     <div class="default-slider">
         <ul>
-            <li> <h1> Build a distributed application with BEAM </h1>
-            <h1>
+            <li> <h1> Distributed applications with BEAM </h1>
+            <h2>
             <li> - Gabriele Santomaggio - @gsantomaggio</li>
-            <li> - Working at Erlang Solutions - London</li>
-            <li> - RabbitMQ contributor/ stackoverflow supporter</li>
+            <li> - RabbitMQ contributor/ supporter</li>
             <li> - Co-author of RabbitMQ Cookbook</li>
-            </h1>
+            </h2>
             </li>
 
 
             <li> <h1> Distributed Erlang - Base concepts </h1>
-            <h1>
+            <h2>
             <li> - erl -sname (example)</li>
-            <li> - Connect to other node</li>
             <li> - .erlang.cookie</li>
             <li> - epmd</li>
-            </h1></li>
+            </h2></li>
 
             <li> <h1> Distributed calls </h1>
-            <h1>
+            <h2>
             <li> - Synchronous distributed call </li>
-            <li> - Replies and Bad Nodes </li>
-            <li> - Time-out or not time-out this is the question</li>
-            <li> - Make a asynchronous distributed call </li>
-            </h1></li>
+            <li> - Replies and/or Bad Nodes </li>
+            <li> - Asynchronous distributed call </li>
+            </h2></li>
 
-            <li> <h1> Synchronous distributed call in this presentation </h1>
-            <h1>
-            <li> - Erlang-OTP</li>
+            <li> <h1> Distributed calls in this presentation </h1>
+            <h2>
             <li> - gen_server </li>
-            <li> - gen_server:multi_call([node() | nodes()], server_info</li>
-            <li> - Read the response </li>
-            </h1></li>
+            <li> - gen_server:multi_call(..)</li>
+            <li> - gen_server:abcast(..) </li>
+            </h2></li>
 
             <li> <h1> Add new feature </h1>
-            <h1>
+            <h2>
             <li> - Search example </li>
-            <li> - </li>
-            <li> - </li>
-            <li> - </li>
-            </h1></li>
+            <li> - Add nodes</li>
+            <li> - Distributed search</li>
+            </h2></li>
 
             <li> <h1> Nodes type family </h1>
-            <h1>
+            <h2>
             <li> - Same type </li>
-            <li> - Connect different families</li>
             <li> - Standard TCP/UPD connections </li>
             <li> - SSL and/or different cookie</li>
-            </h1></li>
+            </h2></li>
 
             <li> <h1> Nodes type family - Example</h1>
-            <h1>
-            <li>  </li>
-            <li> </li>
-            <li>  </li>
-            <li> </li>
-            </h1></li>
+            <h2>
+            <li> - AMQP </li>
+            <li> - Beam clusters</li>
+            <li> - TCP connections </li>
+            </h2></li>
+
+            <li> <h1> Links</h1>
+            <h2>
+            <li> - @beam_italia </li>
+            <li> - @erlangsolutions </li>
+            <li> - beam-italia.slack.com </li>
+            </h2></li>
+
+            <li> <h1> Thank you </h1>
+            <h2>
+            <li> - Any questions ? </li>
+            <li> - @gsantomaggio </li>
+            <li> - Erlang-Solutions </li>
+            </h2></li>
   
 
         </ul>
         <script>$('.default-slider').unslider();</script>
     </div>
 </div>
+
 
 
 
@@ -187,24 +214,16 @@
           <th>Processes Used</th>
           <th>System</th>
           <th>Atoms Used</th>
-          <th>Clients WS</th>
+          <th>Active Users</th>
+          <th>Total Users</th>
         </tr>
       </thead>
 
         <tbody id="nodes_body">  </tbody>
     </table>
 </div>
-
-<div style="display: inline-block; margin-left:auto; margin-right:0;vertical-align: top;">
-    <table id="ws_table"> 
-      <tr><td style="border: 1px solid yellow;background-color: #282828;"><span id="ws_status"></span></td></tr>
-      <tr><td style="border: 1px solid yellow;background-color: #282828;"><span id="ws_count"></span></td></tr>
-    </table>
 </div>
 
-
-
-</div>
 
 
 

@@ -1,24 +1,30 @@
 body {
     background-color: #363636;
-    color: #F6FACC;
+    color: #FBFF5F;
     height: 100%;
 }
 
 h1 {
-    text-indent: 50px;
-    letter-spacing: 3px;
-    line-height: 2.5;
+    text-indent: 10px;
+    letter-spacing: 2px;
+    line-height: 2;
+    font-size: 48px;
+    color: #51FF07;
+
+
 }
 
 h2 {
     text-indent: 10px;
-    letter-spacing: 2px;
-    line-height: 2.5;
+    letter-spacing: 1px;
+    line-height: 2;
+    font-size: 48px;
+
 }
 #container {
     position:relative;
     width:80%;
-    height:60%;
+    height:80%;
 
     margin: 0 auto;
     border: 1px solid #5E82A2;
@@ -52,8 +58,12 @@ h2 {
     border-collapse: collapse;
     
   }
+  thead {
+    color: #51FF07;
+
+  }
   th, td {
-    border: 1px solid orange;
+    border: 1px solid #5E82A2;
     padding: 10px;
     text-align: left;
     font-size: 18px;
