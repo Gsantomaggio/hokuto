@@ -12,8 +12,9 @@
     <link rel="stylesheet" href="css/slides.css">
 
 
+   
+
     <script type="text/javascript">
-      
       var websocket;
       $(document).ready(init);
       
@@ -26,7 +27,21 @@
               $('#ws_status').text('<p>websockets are supported</p>');
               connect(wsHost);
           };
-              // $("#container_info").hide(); 	
+
+          $('#btn_send').click(function(){
+           var edt = $("#edt_msg").val();
+           $('#lbl_result').empty()
+           $.ajax
+            ({ 
+                url: '/rest/publish',
+                data: JSON.stringify(edt),
+                type: 'post',
+                success: function(result)
+                {
+                     $('#lbl_result').text(result)
+                }
+            });
+        }); 	
       };
       function connect(wsHost)
       {
@@ -81,9 +96,6 @@
             $('#ws_connected_count').text("Cluster active users: " + ws_connected_count);
             $('#ws_total_count').text("Cluster total users:" + ws_total_count);
             $('#cluster_nodes').text("Cluster total nodes:" + data.length);
-
-
-            // $("#container_info").fadeIn('slow');
           
       };  
       function onError(evt) {
@@ -174,9 +186,9 @@
 
             <li> <h1> Nodes type family - Example</h1>
             <h2>
-            <li> - AMQP </li>
-            <li> - Beam clusters</li>
-            <li> - TCP connections </li>
+            <li> - RabbitMQ </li>
+            <li> - TCP Connection </li>
+            <li> - Message: <input type="text" id="edt_msg"></input> <button id="btn_send" type="button">Send</button> <label id="lbl_result" style="font-size: 20px"></label></li>
             </h2></li>
 
             <li> <h1> Links</h1>

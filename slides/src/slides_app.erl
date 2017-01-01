@@ -15,12 +15,12 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
-    {_Status, Port} = application:get_env(slides,port),
-    io:format("****************************************************~n",[]),
-    io:format("********************* Slides ~n",[]),
-    io:format("********************* Node Name: ~w ~n",[node()]),
-    io:format("********************* HTTP Port: ~b ~n",[list_to_integer(Port)]),
-    io:format("****************************************************~n",[]),
+    {_Status, Port} = application:get_env(slides, port),
+    io:format("****************************************************~n", []),
+    io:format("********************* Slides ~n", []),
+    io:format("********************* Node Name: ~w ~n", [node()]),
+    io:format("********************* HTTP Port: ~b ~n", [list_to_integer(Port)]),
+    io:format("****************************************************~n", []),
 
 
     Dispatch = cowboy_router:compile([
@@ -28,9 +28,10 @@ start(_StartType, _StartArgs) ->
             {"/", cowboy_static, {priv_file, slides, "index.html"}},
             {"/websocket", ws_handler, []},
             {"/rest/search", rest_search, []},
+            {"/rest/publish", rest_rabbitmq, []},
             {"/[...]", cowboy_static, {priv_dir, slides, "",
                 [{mimetypes, cow_mimetypes, all}]}}
-       ]}
+        ]}
     ]),
     {ok, _} = cowboy:start_http(http, 100, [{port, list_to_integer(Port)}], [
         {env, [{dispatch, Dispatch}]}

@@ -9,7 +9,8 @@
     cowboy,
     cowlib,
     ranch,
-    jsx
+    jsx,
+    amqp_client
    ]},
   {env,[]},
   {modules, []},
