@@ -29,6 +29,9 @@ to_json_item(Item) ->
 
 to_json(ReqData, Context) ->
     Search_Nodes = lists:filter(fun(K) -> string:str(lists:flatten(io_lib:format("~s",[K])), "search_") =:= 1  end, [node()|nodes()]),
-    {Replies, _BadNodes} = gen_server:multi_call(Search_Nodes, mod_search, {command, search}, 20000),
+   
+    {Replies, _BadNodes} = gen_server:multi_call(Search_Nodes, mod_search, 
+        {command, search}, 20000),
+   
     Body = io_lib:format("[~s]", [json_utils:to_json_array(Replies, fun to_json_item/1)]),
     {Body, ReqData, Context}.

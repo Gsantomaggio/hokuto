@@ -33,7 +33,7 @@
            $('#lbl_result').empty()
            $.ajax
             ({ 
-                url: '/rest/publish',
+                url: '/rest/publish?value=message',
                 data: JSON.stringify(edt),
                 type: 'post',
                 success: function(result)
@@ -94,7 +94,7 @@
             }
           
             $('#ws_connected_count').text("Cluster active users: " + ws_connected_count);
-            $('#ws_total_count').text("Cluster total users:" + ws_total_count);
+            $('#ws_total_count').text("Cluster log users:" + ws_total_count);
             $('#cluster_nodes').text("Cluster total nodes:" + data.length);
           
       };  
@@ -227,7 +227,7 @@
           <th>System</th>
           <th>Atoms Used</th>
           <th>Active Users</th>
-          <th>Total Users</th>
+          <th>Log Users</th>
         </tr>
       </thead>
 

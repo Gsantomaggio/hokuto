@@ -26,15 +26,19 @@ allowed_methods(Req, State) ->
 handle(Req, State) ->
     {Method, Req2} = cowboy_req:method(Req),
     HasBody = cowboy_req:has_body(Req2),
-    {ok, Req3} = maybe_publish(Method, HasBody, Req2),
-    {ok, Req3, State}.
+    {Value, Req3} = cowboy_req:qs_val(<<"value">>, Req2),
+    {ok, Req4} = maybe_publish(Method, HasBody, Req3, Value),
+    {ok, Req4, State}.
 
-maybe_publish(<<"POST">>, true, Req) ->
+maybe_publish(<<"POST">>, true, Req, <<"message">>) ->
     {ok, MSG, Req2} = cowboy_req:body(Req),
     publish(MSG, Req2);
-maybe_publish(<<"POST">>, false, Req) ->
+maybe_publish(<<"GET">>, false, Req, <<"cluster_info">>) ->
+    MSG = cluster_info:cluster_status(),
+    publish(list_to_binary(MSG), Req);
+maybe_publish(<<"POST">>, false, Req, _Value) ->
     cowboy_req:reply(400, [], <<"Missing body.">>, Req);
-maybe_publish(_, _, Req) ->
+maybe_publish(_, _, Req, _Value) ->
     %% Method not allowed.
     cowboy_req:reply(405, Req).
 
