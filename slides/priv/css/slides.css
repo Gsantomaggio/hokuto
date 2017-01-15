@@ -2,6 +2,10 @@ body {
     background-color: #363636;
     color: #FBFF5F;
     height: 100%;
+    a {
+      color: #FBFF5F;
+    }
+    
 }
 
 h1 {

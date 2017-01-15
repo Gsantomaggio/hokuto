@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/slides.css">
+
+</head>
+
+
+<div id="container_info">
+<div style="display: inline-block;">
+    <table id="nodes_table"> 
+    <thead>
+        <tr>
+          <th>Receive</th>
+          <th>Send</th>          
+        </tr>
+      </thead>
+
+        <tbody> 
+		<tr>
+          <td>F= fun R()->receive <br> 
+ 		{msg, MSG} -> io:format("got message:~s~n",[MSG]);<br>
+ 		{fn, FUN} -> FUN() <br>
+ 		end, 
+ 		R() 
+ 		end.
+ 		 </td>
+          <td>{shell, node1@mac} ! {msg, "hello"} .</td>          
+        </tr>
+        <tr>
+        	<td>
+        		register(shell, spawn(F)).
+        	</td>
+        	<td>
+        		F1 = fun S1() -> io:format("O what! a new function ~n",[]), timer:sleep(3000), io:format("Executed~n",[]) end.<br><br>
+				{shell, node1@mac} ! {fn,F1}.
+        	</td>
+
+        </tr>
+
+         </tbody>
+    </table>
+</div>
+</div>
+
+</html>

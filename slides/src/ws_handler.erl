@@ -12,7 +12,7 @@ init({tcp, http}, _Req, _Opts) ->
 
 websocket_init(_TransportName, Req, _Opts) ->
 
-    erlang:start_timer(1000, self(), <<"Init..">>),
+    erlang:start_timer(1000, self(), <<"[]">>),
     gen_server:abcast([node()], server_info, {new_client}),
     {ok, Req, undefined_state}.
 
