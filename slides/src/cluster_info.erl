@@ -25,6 +25,9 @@ to_json_item(Item) ->
     end.
 
 
+% to_json(Replies, _BadNodes) ->
+%     io_lib:format("[~s]", [json_utils:to_json_array(Replies, fun to_json_item/1)]).
+
 to_json(Replies, _BadNodes) ->
     io_lib:format("[~s]", [json_utils:to_json_array(Replies, fun to_json_item/1)]).
 

@@ -29,10 +29,12 @@ start_link() ->
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
      RestartStrategy = {one_for_one, 10, 60},
-     ChildSpec = {server_info, {server_info, start_link, []},
+     ChildSpec = [{server_info, {server_info, start_link, []},
           permanent, brutal_kill, worker, [server_info]},
-     Children = [ChildSpec],
-     {ok, {RestartStrategy, Children}}.
+          {slides_monitor, {slides_monitor, start_link, []},
+          permanent, brutal_kill, worker, [slides_monitor]}],
+
+     {ok, {RestartStrategy, ChildSpec}}.
 
 
 %%{ok, { {one_for_all, 0, 1}, []} }.

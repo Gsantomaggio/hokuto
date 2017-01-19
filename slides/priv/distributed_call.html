@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/slides.css">
+
+</head>
+
+
+<div id="container_info">
+<div style="display: inline-block;">
+    <table id="nodes_table"> 
+    <thead>
+        <tr>
+          <th>Calls</th>
+                   
+        </tr>
+      </thead>
+
+        <tbody> 
+		      <tr>
+          <td>{Replies, BadNodes} = gen_server:multi_call([node() | nodes()], server_info, {command, info, node()}, 20000), <br>
+          io:format("Replies are:~w~n~nBadNodes are:~w~n",[Replies, BadNodes]).
+          </td>          
+        </tr>
+        <tr>
+        </tr>
+
+         </tbody>
+    </table>
+</div>
+</div>
+
+</html>

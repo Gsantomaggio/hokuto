@@ -12,7 +12,7 @@ init({tcp, http}, _Req, _Opts) ->
 
 websocket_init(_TransportName, Req, _Opts) ->
 
-    erlang:start_timer(1000, self(), <<"[]">>),
+    erlang:start_timer(1000, self(), <<"[">>),
     gen_server:abcast([node()], server_info, {new_client}),
     {ok, Req, undefined_state}.
 
@@ -21,7 +21,6 @@ websocket_handle(_Data, Req, State) ->
 
 
 websocket_info({timeout, _Ref, Msg}, Req, State) ->
-
     erlang:start_timer(1000, self(), cluster_info:cluster_status()),
     {reply, {text, Msg}, Req, State};
 websocket_info(_Info, Req, State) ->
