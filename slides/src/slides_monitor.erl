@@ -111,11 +111,13 @@ handle_cast(_Request, State) ->
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
 handle_info({nodeup, Node}, State) ->
-    io:format("Node ~p is up ~n", [Node]),
+    Msg = io_lib:format("got a new friend! ~p ", [Node]),
+    ws_handler:notify_node(Msg),
     {noreply, State};
 
 handle_info({nodedown, Node}, State) ->
-    io:format("Node ~p  is down ~n", [Node]),
+    Msg = io_lib:format("Oh no ~p just left", [Node]),
+    ws_handler:notify_node(Msg),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
