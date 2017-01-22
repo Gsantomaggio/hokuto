@@ -10,7 +10,8 @@
     cowlib,
     ranch,
     jsx,
-    amqp_client
+    amqp_client,
+    gproc
    ]},
   {env,[]},
   {modules, []},

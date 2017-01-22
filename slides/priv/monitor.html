@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+    <!-- And the relevant JavaScript -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/unslider-min.js"></script>
+    <link rel="stylesheet" href="css/unslider.css">
+    <link rel="stylesheet" href="css/unslider-dots.css">
+
+    <link rel="stylesheet" href="css/slides.css">
+
+
+   
+
+    <script type="text/javascript">
+      var websocket;
+      $(document).ready(init);
+      
+      function init() {
+          wsHost = "ws://" + window.location.host + "/wsmonitor";
+          if(!("WebSocket" in window)){  
+              $('#ws_status').text('websockets are not supported');
+              $("#navigation").hide();  
+          } else {
+              $('#ws_status').text('<p>websockets are supported</p>');
+              connect(wsHost);
+          };
+
+          	
+      };
+      function connect(wsHost)
+      {
+          websocket = new WebSocket(wsHost);
+          showScreen('<b>Connecting to: ' +  wsHost + '</b>'); 
+          websocket.onopen = function(evt) { onOpen(evt) }; 
+          websocket.onclose = function(evt) { onClose(evt) }; 
+          websocket.onmessage = function(evt) { onMessage(evt) }; 
+          websocket.onerror = function(evt) { onError(evt) }; 
+      };  
+      
+      function disconnect() {
+          websocket.close();
+      }; 
+      function toggle_connection(){
+          if(websocket.readyState == websocket.OPEN){
+              disconnect();
+          } else {
+              connect();
+          };
+      };
+      
+      function onOpen(evt) { 
+          $('#ws_status').text("Websocket status: Connected");
+
+      };  
+      function onClose(evt) { 
+          $('#ws_status').text("Websocket status: Disconnect");
+      };  
+      function onMessage(evt) { 
+           
+           $('#last_status').text(evt.data);
+          
+          
+      };  
+      function onError(evt) {
+          $('#ws_status').text("WS error:" + evt.data);
+     };
+      function format_date(d){
+
+      	
+		var datestring = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
+	    d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+
+		return datestring;
+      }
+
+      function showScreen(txt) {
+
+
+          $('#output').html("Cluster info: " + txt);
+      };
+      function clearScreen() 
+      { 
+          $('#output').html("");
+      };
+
+
+    </script>
+
+</head>
+
+<div id="container_info">
+    <table id="ws_table"> 
+      <tr>
+      <td style="border: 0px solid yellow;"><span id="ws_status"></span></td>
+      <td style="border: 0px solid yellow;"><span id="last_status"></span></td>
+      </tr>
+    </table>
+</div>
+
+
+
+
+
+</body>
+</html>

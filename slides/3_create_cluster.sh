@@ -15,7 +15,7 @@ sleep 3
 for i in `seq 1 4`;
 do
     echo "Adding the node$i to the cluster"
-    erl -sname con -noinput  -eval "rpc:call('web_node_$i@$(hostname)', net_kernel, connect, ['web_node_0@$(hostname)']),init:stop()."
+    erl -sname con -noinput -hidden -eval "rpc:call('web_node_$i@$(hostname)', net_kernel, connect, ['web_node_0@$(hostname)']),init:stop()."
     sleep 2
 done
 

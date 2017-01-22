@@ -19,7 +19,7 @@
       $(document).ready(init);
       
       function init() {
-          wsHost = "ws://" + window.location.host + "/websocket";
+          wsHost = "ws://" + window.location.host + "/wsinfo";
           if(!("WebSocket" in window)){  
               $('#ws_status').text('websockets are not supported');
               $("#navigation").hide();  

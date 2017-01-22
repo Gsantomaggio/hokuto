@@ -21,9 +21,8 @@
     handle_info/2,
     terminate/2,
     code_change/3]).
-
+-include("slides.hrl").
 -define(SERVER, ?MODULE).
-
 -record(state, {}).
 
 %%%===================================================================
@@ -111,13 +110,14 @@ handle_cast(_Request, State) ->
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
 handle_info({nodeup, Node}, State) ->
-    Msg = io_lib:format("got a new friend! ~p ", [Node]),
-    ws_handler:notify_node(Msg),
+    Msg = io_lib:format("Got a new cluster friend! ~p ~n", [Node]),
+    gproc:send({p, l, ?WSKey}, {self(), ?WSKey, Msg}),
+
     {noreply, State};
 
 handle_info({nodedown, Node}, State) ->
-    Msg = io_lib:format("Oh no ~p just left", [Node]),
-    ws_handler:notify_node(Msg),
+    Msg = io_lib:format("~p just left the cluster ~n", [Node]),
+    gproc:send({p, l, ?WSKey}, {self(), ?WSKey, Msg}),
     {noreply, State}.
 
 %%--------------------------------------------------------------------

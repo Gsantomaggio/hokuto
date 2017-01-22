@@ -26,7 +26,8 @@ start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
         {'_', [
             {"/", cowboy_static, {priv_file, slides, "index.html"}},
-            {"/websocket", ws_handler, []},
+            {"/wsinfo", ws_handler, []},
+            {"/wsmonitor", ws_monitor, []},
             {"/rest/search", rest_search, []},
             {"/rest/publish", rest_rabbitmq, []},
             {"/[...]", cowboy_static, {priv_dir, slides, "",
