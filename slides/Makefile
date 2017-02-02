@@ -1,4 +1,10 @@
 REBAR3_URL=https://s3.amazonaws.com/rebar3/rebar3
+NODE0=web_node_0@$(shell hostname)
+NODE1=web_node_1@$(shell hostname)
+NODE2=web_node_2@$(shell hostname)
+NODE3=web_node_3@$(shell hostname)
+NODE4=web_node_4@$(shell hostname)
+
 
 ifeq ($(wildcard rebar3),rebar3)
 REBAR3 = $(CURDIR)/rebar3
@@ -41,18 +47,31 @@ test:
 release: test
 	@$(REBAR3) release
 
-run-one:
+run-one: build
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_0  PORT=8080 _build/default/rel/slides/bin/slides console
+
+run-two: build
+	RELX_REPLACE_OS_VARS=true NODE_NAME=node_1  PORT=8081 _build/default/rel/slides/bin/slides console
 
 run-nodes:
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_1  PORT=8081 _build/default/rel/slides/bin/slides foreground &
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_2  PORT=8082 _build/default/rel/slides/bin/slides foreground &
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_3  PORT=8083 _build/default/rel/slides/bin/slides foreground &
+	RELX_REPLACE_OS_VARS=true NODE_NAME=node_4  PORT=8084 _build/default/rel/slides/bin/slides foreground &
 
-cluster:
-	for i in `seq 1 4`; \
-	do \
-	echo "Adding the node$i to the cluster" \
-	erl -sname con -noinput -hidden -eval "rpc:call('web_node_$i@$(hostname)', net_kernel, connect, ['web_node_0@$(hostname)']),init:stop()." \
-	sleep 2 \
-	done \
+cluster: run-nodes
+	sleep 3   
+	erl -sname con -noinput -hidden -eval "rpc:call($(NODE1), net_kernel, connect, [$(NODE0)]),init:stop()."
+	sleep 3   
+	erl -sname con -noinput -hidden -eval "rpc:call($(NODE2), net_kernel, connect, [$(NODE0)]),init:stop()."
+	sleep 3
+	erl -sname con -noinput -hidden -eval "rpc:call($(NODE3), net_kernel, connect, [$(NODE0)]),init:stop()."
+	sleep 3
+	erl -sname con -noinput -hidden -eval "rpc:call($(NODE4), net_kernel, connect, [$(NODE0)]),init:stop()."
+	
+
+stop-nodes:
+	RELX_REPLACE_OS_VARS=true NODE_NAME=node_1  PORT=8081 _build/default/rel/slides/bin/slides stop &
+	RELX_REPLACE_OS_VARS=true NODE_NAME=node_2  PORT=8082 _build/default/rel/slides/bin/slides stop &
+	RELX_REPLACE_OS_VARS=true NODE_NAME=node_3  PORT=8083 _build/default/rel/slides/bin/slides stop &
+	RELX_REPLACE_OS_VARS=true NODE_NAME=node_4  PORT=8084 _build/default/rel/slides/bin/slides stop &
