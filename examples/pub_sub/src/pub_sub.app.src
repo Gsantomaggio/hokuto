@@ -1,0 +1,16 @@
+{application, pub_sub,
+ [{description, "Example Publish Subscribe"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, { pub_sub_app, []}},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {licenses, []},
+  {links, []}
+ ]}.
