@@ -111,12 +111,13 @@ handle_cast(_Request, State) ->
     {stop, Reason :: term(), NewState :: #state{}}).
 handle_info({nodeup, Node}, State) ->
     Msg = io_lib:format("Got a new cluster friend! ~p ~n", [Node]),
+    io:format("~s",[Msg]),
     gproc:send({p, l, ?WSKey}, {self(), ?WSKey, Msg}),
-
     {noreply, State};
 
 handle_info({nodedown, Node}, State) ->
     Msg = io_lib:format("~p just left the cluster ~n", [Node]),
+    io:format("~s",[Msg]),
     gproc:send({p, l, ?WSKey}, {self(), ?WSKey, Msg}),
     {noreply, State}.
 
