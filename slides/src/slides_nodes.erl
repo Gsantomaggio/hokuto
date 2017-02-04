@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 19. Jan 2017 21:30
 %%%-------------------------------------------------------------------
--module(slides_monitor).
+-module(slides_nodes).
 -author("GaS").
 
 -behaviour(gen_server).
@@ -61,7 +61,9 @@ start_link() ->
 init([]) ->
     io:format("Monitor nodes started ~n", []),
     _ = net_kernel:monitor_nodes(true, []),
+    erlang:start_timer(3000, self(), <<"">>),
     {ok, #state{}}.
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -111,15 +113,19 @@ handle_cast(_Request, State) ->
     {stop, Reason :: term(), NewState :: #state{}}).
 handle_info({nodeup, Node}, State) ->
     Msg = io_lib:format("Got a new cluster friend! ~p ~n", [Node]),
-    io:format("~s",[Msg]),
+    io:format("~s", [Msg]),
     gproc:send({p, l, ?WSKey}, {self(), ?WSKey, Msg}),
     {noreply, State};
 
 handle_info({nodedown, Node}, State) ->
     Msg = io_lib:format("~p just left the cluster ~n", [Node]),
-    io:format("~s",[Msg]),
+    io:format("~s", [Msg]),
     gproc:send({p, l, ?WSKey}, {self(), ?WSKey, Msg}),
+    {noreply, State};
+handle_info({timeout, _Ref, _Msg}, State) ->
+    etcd2:join(),
     {noreply, State}.
+
 
 %%--------------------------------------------------------------------
 %% @private

@@ -48,7 +48,7 @@ release: test
 	@$(REBAR3) release
 
 run-one: build
-	RELX_REPLACE_OS_VARS=true NODE_NAME=node_0  PORT=8080 _build/default/rel/slides/bin/slides console
+	RELX_REPLACE_OS_VARS=true NODE_NAME=node_0  PORT=8080 ETCD2_HOST=172.17.8.101 _build/default/rel/slides/bin/slides console
 
 run-two: build
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_1  PORT=8081 _build/default/rel/slides/bin/slides console
