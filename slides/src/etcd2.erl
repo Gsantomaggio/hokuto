@@ -14,8 +14,11 @@
 
 
 
-getenv(OSKey) ->
-    os:getenv(OSKey).
+getenv(OSKey, Default) ->
+    case os:getenv(OSKey) of
+        Value -> Value;
+        false -> Default
+    end.
 
 
 register_node() ->
@@ -23,15 +26,11 @@ register_node() ->
 
 
 get_nodes() ->
-    R = getenv("ETCD2_HOST"),
-    io:format("~s",[R]),
-    false.
-
-%%   httpc:get(get(etcd_scheme),
-%%        get(etcd_host),
-%%        get(etcd_port),
-%%        base_path(),
-%%        [{recursive, true}]).
+    httpc:get(getenv("ETCD2_SCHEMA", "etcd_scheme"),
+        getenv("ETCD2_HOST", "127.0.0.1"),
+        getenv("ETCD2_PORT", 2379),
+        "slides",
+        [{recursive, true}]).
 
 
 maybe_join() ->

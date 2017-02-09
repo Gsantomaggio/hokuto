@@ -79,9 +79,17 @@ init([]) ->
     {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
     {stop, Reason :: term(), NewState :: #state{}}).
 
+
+
+
+% sync call
 handle_call({command, info, _NodeFrom}, _From, State) ->
     NewState = State#state{memory = erlang:memory()},
     {reply, NewState, State}.
+
+
+
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -94,6 +102,10 @@ handle_call({command, info, _NodeFrom}, _From, State) ->
     {noreply, NewState :: #state{}} |
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
+
+
+
+
 handle_cast({new_client}, State) ->
     NewState = State#state{web_socket_connected = State#state.web_socket_connected + 1,
         total_web_sockets = State#state.total_web_sockets + 1},

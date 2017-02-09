@@ -134,9 +134,7 @@ get(Scheme, Host, Port, Path, Args) ->
 %%
 get(Scheme, Host, Port, Path, Args, Headers, HttpOpts) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
-    autocluster_log:debug("GET ~s", [URL]),
     Response = httpc:request(get, {URL, Headers}, HttpOpts, []),
-    autocluster_log:debug("Response: [~p]", [Response]),
     parse_response(Response).
 
 
@@ -154,9 +152,7 @@ get(Scheme, Host, Port, Path, Args, Headers, HttpOpts) ->
 %%
 post(Scheme, Host, Port, Path, Args, Body) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
-    autocluster_log:debug("POST ~s [~p]", [URL, Body]),
     Response = httpc:request(post, {URL, [], ?CONTENT_JSON, Body}, [], []),
-    autocluster_log:debug("Response: [~p]", [Response]),
     parse_response(Response).
 
 
@@ -174,9 +170,7 @@ post(Scheme, Host, Port, Path, Args, Body) ->
 %%
 put(Scheme, Host, Port, Path, Args, Body) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
-    autocluster_log:debug("PUT ~s [~p]", [URL, Body]),
     Response = httpc:request(put, {URL, [], ?CONTENT_URLENCODED, Body}, [], []),
-    autocluster_log:debug("Response: [~p]", [Response]),
     parse_response(Response).
 
 

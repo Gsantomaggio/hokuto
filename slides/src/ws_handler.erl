@@ -8,7 +8,6 @@
 -export([websocket_terminate/3]).
 
 init({tcp, http}, _Req, _Opts) ->
-    io:format("my pid ~w~n", [self()]),
     {upgrade, protocol, cowboy_websocket}.
 
 websocket_init(_TransportName, Req, _Opts) ->
