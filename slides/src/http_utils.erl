@@ -7,7 +7,7 @@
 %%% Created : 04. Feb 2017 16:05
 %% COPIED FROM https://github.com/aweber/rabbitmq-autocluster/blob/master/src/autocluster_httpc.erl
 %%%-------------------------------------------------------------------
--module(httpc).
+-module(http_utils).
 -author("gabriele").
 
 
@@ -63,7 +63,7 @@ build_path([], Path) -> Path.
 %% @end
 %%
 build_uri(Scheme, Host, Port, Path, QArgs) ->
-    build_uri(string:join([Scheme, "://", Host, ":", autocluster_util:as_string(Port)], ""), Path, QArgs).
+    build_uri(string:join([Scheme, "://", Host, ":", as_string(Port)], ""), Path, QArgs).
 
 
 %% @public
@@ -188,9 +188,7 @@ put(Scheme, Host, Port, Path, Args, Body) ->
 %%
 delete(Scheme, Host, Port, Path, Args, Body) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
-    autocluster_log:debug("DELETE ~s [~p]", [URL, Body]),
     Response = httpc:request(delete, {URL, [], ?CONTENT_URLENCODED, Body}, [], []),
-    autocluster_log:debug("Response: [~p]", [Response]),
     parse_response(Response).
 
 
@@ -214,14 +212,12 @@ decode_body(?CONTENT_JSON, Body) ->
 %% @end
 %%
 parse_response({error, Reason}) ->
-    autocluster_log:debug("HTTP Error ~p", [Reason]),
     {error, Reason};
 
 parse_response({ok, 200, Body})  -> {ok, decode_body(?CONTENT_JSON, Body)};
 parse_response({ok, 201, Body})  -> {ok, decode_body(?CONTENT_JSON, Body)};
 parse_response({ok, 204, _})     -> {ok, []};
 parse_response({ok, Code, Body}) ->
-    autocluster_log:debug("HTTP Response (~p) ~s", [Code, Body]),
     {error, integer_to_list(Code)};
 
 parse_response({ok, {{_,200,_},Headers,Body}}) ->
@@ -230,7 +226,6 @@ parse_response({ok,{{_,201,_},Headers,Body}}) ->
     {ok, decode_body(proplists:get_value("content-type", Headers, ?CONTENT_JSON), Body)};
 parse_response({ok,{{_,204,_},_,_}}) -> {ok, []};
 parse_response({ok,{{_Vsn,Code,_Reason},_,Body}}) ->
-    autocluster_log:debug("HTTP Response (~p) ~s", [Code, Body]),
     {error, integer_to_list(Code)}.
 
 
@@ -243,6 +238,29 @@ parse_response({ok,{{_Vsn,Code,_Reason},_,Body}}) ->
 %% @end
 %%
 percent_encode(Value) ->
-    http_uri:encode(autocluster_util:as_string(Value)).
+    http_uri:encode(as_string(Value)).
+
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Return the passed in value as a string.
+%% @end
+%%--------------------------------------------------------------------
+-spec as_string(Value :: atom() | binary() | integer() | string())
+        -> string().
+as_string([]) -> "";
+as_string(Value) when is_atom(Value) ->
+    as_string(atom_to_list(Value));
+as_string(Value) when is_binary(Value) ->
+    as_string(binary_to_list(Value));
+as_string(Value) when is_integer(Value) ->
+    as_string(integer_to_list(Value));
+as_string(Value) when is_list(Value) ->
+    lists:flatten(Value);
+as_string(Value) ->
+    io:format("Unexpected data type for list value: ~p~n",
+        [Value]),
+    Value.
 
 

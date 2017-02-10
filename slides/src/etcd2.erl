@@ -16,8 +16,8 @@
 
 getenv(OSKey, Default) ->
     case os:getenv(OSKey) of
-        Value -> Value;
-        false -> Default
+        false -> Default;
+        Value -> Value
     end.
 
 
@@ -26,7 +26,7 @@ register_node() ->
 
 
 get_nodes() ->
-    httpc:get(getenv("ETCD2_SCHEMA", "etcd_scheme"),
+    http_utils:get(getenv("ETCD2_SCHEMA", "etcd_scheme"),
         getenv("ETCD2_HOST", "127.0.0.1"),
         getenv("ETCD2_PORT", 2379),
         "slides",
