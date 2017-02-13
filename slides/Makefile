@@ -61,13 +61,13 @@ run-nodes:
 
 cluster: run-nodes
 	sleep 3   
-	erl -sname con -noinput -hidden -eval "rpc:call($(NODE1), net_kernel, connect, [$(NODE0)]),init:stop()."
+	erl -sname con -noinput -hidden -eval "rpc:call('$(NODE1)', net_kernel, connect, ['$(NODE0)']),init:stop()."
 	sleep 3   
-	erl -sname con -noinput -hidden -eval "rpc:call($(NODE2), net_kernel, connect, [$(NODE0)]),init:stop()."
+	erl -sname con -noinput -hidden -eval "rpc:call('$(NODE2)', net_kernel, connect, ['$(NODE0)']),init:stop()."
 	sleep 3
-	erl -sname con -noinput -hidden -eval "rpc:call($(NODE3), net_kernel, connect, [$(NODE0)]),init:stop()."
+	erl -sname con -noinput -hidden -eval "rpc:call('$(NODE3)', net_kernel, connect, ['$(NODE0)']),init:stop()."
 	sleep 3
-	erl -sname con -noinput -hidden -eval "rpc:call($(NODE4), net_kernel, connect, [$(NODE0)]),init:stop()."
+	erl -sname con -noinput -hidden -eval "rpc:call('$(NODE4)', net_kernel, connect, ['$(NODE0)']),init:stop()."
 	
 
 stop-nodes:
