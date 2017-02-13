@@ -63,7 +63,9 @@ build_path([], Path) -> Path.
 %% @end
 %%
 build_uri(Scheme, Host, Port, Path, QArgs) ->
-    build_uri(string:join([Scheme, "://", Host, ":", as_string(Port)], ""), Path, QArgs).
+    R = build_uri(string:join([Scheme, "://", Host, ":", slides_utils:as_string(Port)], ""), Path, QArgs),
+    io:format("PAth ~s~n",[R]),
+    R.
 
 
 %% @public
@@ -134,6 +136,7 @@ get(Scheme, Host, Port, Path, Args) ->
 %%
 get(Scheme, Host, Port, Path, Args, Headers, HttpOpts) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
+    io:format("URL~s",[URL]),
     Response = httpc:request(get, {URL, Headers}, HttpOpts, []),
     parse_response(Response).
 
@@ -199,7 +202,7 @@ delete(Scheme, Host, Port, Path, Args, Body) ->
 %%
 decode_body(_, []) -> [];
 decode_body(?CONTENT_JSON, Body) ->
-    case rabbit_json:try_decode(rabbit_data_coercion:to_binary(Body), []) of
+    case json_utils:try_decode(slides_utils:to_binary(Body), []) of
         {ok, Value} -> Value;
         {error,_}   -> []
     end.
@@ -238,29 +241,10 @@ parse_response({ok,{{_Vsn,Code,_Reason},_,Body}}) ->
 %% @end
 %%
 percent_encode(Value) ->
-    http_uri:encode(as_string(Value)).
+    http_uri:encode(slides_utils:as_string(Value)).
 
 
 
-%%--------------------------------------------------------------------
-%% @doc
-%% Return the passed in value as a string.
-%% @end
-%%--------------------------------------------------------------------
--spec as_string(Value :: atom() | binary() | integer() | string())
-        -> string().
-as_string([]) -> "";
-as_string(Value) when is_atom(Value) ->
-    as_string(atom_to_list(Value));
-as_string(Value) when is_binary(Value) ->
-    as_string(binary_to_list(Value));
-as_string(Value) when is_integer(Value) ->
-    as_string(integer_to_list(Value));
-as_string(Value) when is_list(Value) ->
-    lists:flatten(Value);
-as_string(Value) ->
-    io:format("Unexpected data type for list value: ~p~n",
-        [Value]),
-    Value.
+
 
 
