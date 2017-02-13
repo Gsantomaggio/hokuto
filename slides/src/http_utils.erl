@@ -7,7 +7,7 @@
 %%% Created : 04. Feb 2017 16:05
 %% COPIED FROM https://github.com/aweber/rabbitmq-autocluster/blob/master/src/autocluster_httpc.erl
 %%%-------------------------------------------------------------------
--module(httpc).
+-module(http_utils).
 -author("gabriele").
 
 
@@ -63,7 +63,9 @@ build_path([], Path) -> Path.
 %% @end
 %%
 build_uri(Scheme, Host, Port, Path, QArgs) ->
-    build_uri(string:join([Scheme, "://", Host, ":", autocluster_util:as_string(Port)], ""), Path, QArgs).
+    R = build_uri(string:join([Scheme, "://", Host, ":", slides_utils:as_string(Port)], ""), Path, QArgs),
+    io:format("PAth ~s~n",[R]),
+    R.
 
 
 %% @public
@@ -134,9 +136,8 @@ get(Scheme, Host, Port, Path, Args) ->
 %%
 get(Scheme, Host, Port, Path, Args, Headers, HttpOpts) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
-    autocluster_log:debug("GET ~s", [URL]),
+    io:format("URL~s",[URL]),
     Response = httpc:request(get, {URL, Headers}, HttpOpts, []),
-    autocluster_log:debug("Response: [~p]", [Response]),
     parse_response(Response).
 
 
@@ -154,9 +155,7 @@ get(Scheme, Host, Port, Path, Args, Headers, HttpOpts) ->
 %%
 post(Scheme, Host, Port, Path, Args, Body) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
-    autocluster_log:debug("POST ~s [~p]", [URL, Body]),
     Response = httpc:request(post, {URL, [], ?CONTENT_JSON, Body}, [], []),
-    autocluster_log:debug("Response: [~p]", [Response]),
     parse_response(Response).
 
 
@@ -174,9 +173,7 @@ post(Scheme, Host, Port, Path, Args, Body) ->
 %%
 put(Scheme, Host, Port, Path, Args, Body) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
-    autocluster_log:debug("PUT ~s [~p]", [URL, Body]),
     Response = httpc:request(put, {URL, [], ?CONTENT_URLENCODED, Body}, [], []),
-    autocluster_log:debug("Response: [~p]", [Response]),
     parse_response(Response).
 
 
@@ -194,9 +191,7 @@ put(Scheme, Host, Port, Path, Args, Body) ->
 %%
 delete(Scheme, Host, Port, Path, Args, Body) ->
     URL = build_uri(Scheme, Host, Port, Path, Args),
-    autocluster_log:debug("DELETE ~s [~p]", [URL, Body]),
     Response = httpc:request(delete, {URL, [], ?CONTENT_URLENCODED, Body}, [], []),
-    autocluster_log:debug("Response: [~p]", [Response]),
     parse_response(Response).
 
 
@@ -207,7 +202,7 @@ delete(Scheme, Host, Port, Path, Args, Body) ->
 %%
 decode_body(_, []) -> [];
 decode_body(?CONTENT_JSON, Body) ->
-    case rabbit_json:try_decode(rabbit_data_coercion:to_binary(Body), []) of
+    case json_utils:try_decode(slides_utils:to_binary(Body), []) of
         {ok, Value} -> Value;
         {error,_}   -> []
     end.
@@ -220,14 +215,12 @@ decode_body(?CONTENT_JSON, Body) ->
 %% @end
 %%
 parse_response({error, Reason}) ->
-    autocluster_log:debug("HTTP Error ~p", [Reason]),
     {error, Reason};
 
 parse_response({ok, 200, Body})  -> {ok, decode_body(?CONTENT_JSON, Body)};
 parse_response({ok, 201, Body})  -> {ok, decode_body(?CONTENT_JSON, Body)};
 parse_response({ok, 204, _})     -> {ok, []};
 parse_response({ok, Code, Body}) ->
-    autocluster_log:debug("HTTP Response (~p) ~s", [Code, Body]),
     {error, integer_to_list(Code)};
 
 parse_response({ok, {{_,200,_},Headers,Body}}) ->
@@ -236,7 +229,6 @@ parse_response({ok,{{_,201,_},Headers,Body}}) ->
     {ok, decode_body(proplists:get_value("content-type", Headers, ?CONTENT_JSON), Body)};
 parse_response({ok,{{_,204,_},_,_}}) -> {ok, []};
 parse_response({ok,{{_Vsn,Code,_Reason},_,Body}}) ->
-    autocluster_log:debug("HTTP Response (~p) ~s", [Code, Body]),
     {error, integer_to_list(Code)}.
 
 
@@ -249,6 +241,10 @@ parse_response({ok,{{_Vsn,Code,_Reason},_,Body}}) ->
 %% @end
 %%
 percent_encode(Value) ->
-    http_uri:encode(autocluster_util:as_string(Value)).
+    http_uri:encode(slides_utils:as_string(Value)).
+
+
+
+
 
 

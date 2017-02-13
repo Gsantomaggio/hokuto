@@ -61,7 +61,7 @@ start_link() ->
 init([]) ->
     io:format("Monitor nodes started ~n", []),
     _ = net_kernel:monitor_nodes(true, []),
-    erlang:start_timer(3000, self(), <<"">>),
+%%    erlang:start_timer(1000, self(), <<"">>),
     {ok, #state{}}.
 
 

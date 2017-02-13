@@ -10,7 +10,7 @@
 -author("gabriele").
 
 %% API
--export([to_json_array/2]).
+-export([to_json_array/2, try_decode/1, decode/1, try_decode/2]).
 
 
 to_json_array([], _Fun) -> [];
@@ -18,3 +18,28 @@ to_json_array([H | T], Fun) when T =/= [] ->
     [[Fun(H) | <<",">>] | to_json_array(T, Fun)];
 to_json_array([H | T], Fun) ->
     [Fun(H) | to_json_array(T, Fun)].
+
+
+-spec try_decode(jsx:json_text()) -> {ok, jsx:json_term()} |
+{error, Reason :: term()}.
+try_decode(JSON) ->
+    try_decode(JSON, []).
+
+
+-spec try_decode(jsx:json_text(), jsx_to_term:config()) ->
+    {ok, jsx:json_term()} | {error, Reason :: term()}.
+try_decode(JSON, Opts) ->
+    try
+        {ok, decode(JSON, Opts)}
+    catch error: Reason ->
+        {error, Reason}
+    end.
+
+-spec decode(jsx:json_text()) -> jsx:json_term().
+decode(JSON) ->
+    decode(JSON, []).
+
+
+-spec decode(jsx:json_text(), jsx_to_term:config()) -> jsx:json_term().
+decode(JSON, Opts) ->
+    jsx:decode(JSON, Opts).
