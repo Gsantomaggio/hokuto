@@ -13,11 +13,8 @@
 -export([to_json_array/2, try_decode/1, decode/1, try_decode/2]).
 
 
-to_json_array([], _Fun) -> [];
-to_json_array([H | T], Fun) when T =/= [] ->
-    [[Fun(H) | <<",">>] | to_json_array(T, Fun)];
-to_json_array([H | T], Fun) ->
-    [Fun(H) | to_json_array(T, Fun)].
+to_json_array(L, Fun) ->
+    [[[Fun(X) | <<",">>] || X <- L, X =/= lists:last(L)] | Fun(lists:last(L))].
 
 
 -spec try_decode(jsx:json_text()) -> {ok, jsx:json_term()} |
