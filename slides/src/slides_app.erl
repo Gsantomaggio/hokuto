@@ -17,7 +17,7 @@
 start(_StartType, _StartArgs) ->
     {_Status, Port} = application:get_env(slides, port),
     io:format("****************************************************~n", []),
-    io:format("********************* Slides ~n", []),
+    io:format("********************* Slides ***********************~n", []),
     io:format("********************* Node Name: ~w ~n", [node()]),
     io:format("********************* HTTP Port: ~b ~n", [list_to_integer(Port)]),
     io:format("****************************************************~n", []),

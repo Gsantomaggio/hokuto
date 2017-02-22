@@ -72,3 +72,6 @@ stop-nodes:
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_2  _build/default/rel/search/bin/search stop &
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_3  _build/default/rel/search/bin/search stop &
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_4  _build/default/rel/search/bin/search stop &
+
+test-rest:
+	curl  http://localhost:8080/rest/search | python -m json.tool

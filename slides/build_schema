@@ -1,0 +1,58 @@
+#/bin/bash
+hr() {
+  local start=$'\e(0' end=$'\e(B' line='qqqqqqqqqqqqqqqq'
+  local cols=${COLUMNS:-$(tput cols)}
+  while ((${#line} < cols)); do line+="$line"; done
+  printf '%s%s%s\n' "$start" "${line:0:cols}" "$end"
+}
+
+function sl {
+ sleep 0.5
+}
+function hl {
+  for ((x = 0; x < 30; x++)); do
+  printf %s -
+done
+echo
+sl    
+}
+
+function hlcl {
+COLUMNS=$(tput cols) 
+line="---- ---- ---- ----"
+nodes="Node Node Node Node"  
+printf "%*s\n" $(((${#title}+$COLUMNS)/2)) "$line"
+printf "%*s\n" $(((${#title}+$COLUMNS)/2)) "$nodes"
+printf "%*s\n" $(((${#title}+$COLUMNS)/2)) "$line"
+sl
+}
+
+function lineDown {
+COLUMNS=$(tput cols)
+printf "%*s\n" $(((${#title}+$COLUMNS)/2)) "^   |"
+printf "%*s\n" $(((${#title}+$COLUMNS)/2)) "|   v"
+sl
+}
+
+function center {
+COLUMNS=$(tput cols)
+printf "%*s\n" $(((${#title}+$COLUMNS)/2)) $1
+sl
+}
+
+clear
+hr
+center "    HTTP-Clients"
+lineDown
+hr
+center "    Erlang-HTTP-Cluster"
+hlcl
+hr
+lineDown
+center "    RABBITMQ-CLUSTER"
+hlcl
+hr
+lineDown
+center "AMQP-Client"
+
+

@@ -60,7 +60,7 @@ start_link() ->
     {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    io:format("mod_search has started (~w)~n", [self()]),
+    io:format("mod_search started (~w)~n", [self()]),
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
@@ -70,14 +70,6 @@ init([]) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(handle_call(Request :: term(), From :: {pid(), Tag :: term()},
-    State :: #state{}) ->
-    {reply, Reply :: term(), NewState :: #state{}} |
-    {reply, Reply :: term(), NewState :: #state{}, timeout() | hibernate} |
-    {noreply, NewState :: #state{}} |
-    {noreply, NewState :: #state{}, timeout() | hibernate} |
-    {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
-    {stop, Reason :: term(), NewState :: #state{}}).
 handle_call({command, search}, _From, State) ->
     NewState = State#state{data = <<"My search data">>},
     {reply, NewState, State}.

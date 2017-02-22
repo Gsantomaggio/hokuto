@@ -25,9 +25,6 @@ to_json_item(Item) ->
     end.
 
 
-% to_json(Replies, _BadNodes) ->
-%     io_lib:format("[~s]", [json_utils:to_json_array(Replies, fun to_json_item/1)]).
-
 to_json(Replies, _BadNodes) ->
     io_lib:format("[~s]", [json_utils:to_json_array(Replies, fun to_json_item/1)]).
 
@@ -35,6 +32,7 @@ to_json(Replies, _BadNodes) ->
 cluster_status() ->
     % Distributed call
     {Replies, BadNodes} = gen_server:multi_call([node() | nodes()],
-        server_info, {command, info, node()}, 20000),
+        server_info, {command, info, node()}, 5000),
+    
     to_json(Replies, BadNodes).
 
