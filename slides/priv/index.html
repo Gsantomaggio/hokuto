@@ -77,7 +77,7 @@
            var data = $.parseJSON(evt.data);
            $.each(data, function(i, item) {
              $('<tr>').html(
-             "<td>" + data[i].node + "</td><td>" + data[i].memory.total + "</td><td>" + data[i].memory.processes +"</td><td>" + data[i].memory.processes_used +"</td>"+
+             "<td>" + data[i].node + "</td><td>" + data[i].processes + "</td><td>" + data[i].memory.total + "</td><td>" + data[i].memory.processes +"</td><td>" + data[i].memory.processes_used +"</td>"+
              "<td>" +data[i].memory.system + "</td><td>" + data[i].memory.atom_used +"</td><td>" +((data[i]["web_socket_connected"] == undefined) ? "": data[i]["web_socket_connected"]) +"</td><td>" +((data[i]["total_web_sockets"] == undefined) ? "": data[i]["total_web_sockets"]) +"</td>"
 
              ).appendTo('#nodes_body');
@@ -215,24 +215,26 @@
 
 
 <div id="container_info">
-<div style="display: inline-block;">
-    <table id="nodes_table"> 
+    <table id="nodes_table" style="width: 100%"> 
     <thead>
         <tr>
-          <th>Node</th>
+          <th rowspan="2">Node</th>
+          <th rowspan="2">Processes</th>
+          <th colspan="5" style="text-align: center">Memory</th>
+          <th rowspan="2">Active Users</th>
+          <th rowspan="2">Log Users</th>
+        </tr>
+        <tr style="background-color: #363636">
           <th>Total</th>
           <th>Processes</th>
           <th>Processes Used</th>
           <th>System</th>
           <th>Atoms Used</th>
-          <th>Active Users</th>
-          <th>Log Users</th>
         </tr>
-      </thead>
+    </thead>
 
-        <tbody id="nodes_body">  </tbody>
+    <tbody id="nodes_body">  </tbody>
     </table>
-</div>
 </div>
 
 

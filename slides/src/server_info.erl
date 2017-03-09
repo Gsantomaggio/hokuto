@@ -24,7 +24,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {memory, web_socket_connected = 0, total_web_sockets = 0}).
+-record(state, {memory, processes = 0, web_socket_connected = 0, total_web_sockets = 0}).
 
 %%%===================================================================
 %%% API
@@ -67,7 +67,7 @@ init([]) ->
 
 % sync call
 handle_call({command, info, _NodeFrom}, _From, State) ->
-    NewState = State#state{memory = erlang:memory()},
+    NewState = State#state{memory = erlang:memory(), processes = length(erlang:processes())},
     {reply, NewState, State}.
 
 
