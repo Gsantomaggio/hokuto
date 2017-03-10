@@ -17,11 +17,11 @@
 to_json_item(Item) ->
     {Node, Detail} = Item,
     case Detail of
-        {_State, Memory, Ws, Total_Ws} ->
-            jsx:encode([{<<"node">>, Node}, {<<"memory">>, Memory},
+        {_State, Memory, Processes, Ws, Total_Ws} ->
+            jsx:encode([{<<"node">>, Node}, {<<"memory">>, Memory}, {<<"processes">>, Processes},
                 {<<"web_socket_connected">>, Ws}, {<<"total_web_sockets">>, Total_Ws}]);
-        {_State, Memory} ->
-            jsx:encode([{<<"node">>, Node}, {<<"memory">>, Memory}])
+        {_State, Memory, Processes} ->
+            jsx:encode([{<<"node">>, Node}, {<<"memory">>, Memory}, {<<"processes">>, Processes}])
     end.
 
 
