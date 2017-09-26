@@ -54,12 +54,16 @@ run-two: build
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_1  PORT=8081 _build/default/rel/slides/bin/slides console
 
 run-nodes:
+	sleep 3
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_1  PORT=8081 _build/default/rel/slides/bin/slides foreground &
+	sleep 3
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_2  PORT=8082 _build/default/rel/slides/bin/slides foreground &
+	sleep 3
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_3  PORT=8083 _build/default/rel/slides/bin/slides foreground &
+	sleep 3
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_4  PORT=8084 _build/default/rel/slides/bin/slides foreground &
 
-cluster: run-nodes
+cluster:
 	sleep 3   
 	erl -sname con -noinput -hidden -eval "rpc:call('$(NODE1)', net_kernel, connect, ['$(NODE0)']),init:stop()."
 	sleep 3   
@@ -70,9 +74,13 @@ cluster: run-nodes
 	erl -sname con -noinput -hidden -eval "rpc:call('$(NODE4)', net_kernel, connect, ['$(NODE0)']),init:stop()."
 
 stop-nodes:
+	sleep 2
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_1  PORT=8081 _build/default/rel/slides/bin/slides stop &
+	sleep 2
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_2  PORT=8082 _build/default/rel/slides/bin/slides stop &
+	sleep 2
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_3  PORT=8083 _build/default/rel/slides/bin/slides stop &
+	sleep 2
 	RELX_REPLACE_OS_VARS=true NODE_NAME=node_4  PORT=8084 _build/default/rel/slides/bin/slides stop &
 
 python-client:

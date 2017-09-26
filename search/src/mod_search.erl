@@ -3,7 +3,7 @@
 %%% @copyright (C) 2016, <COMPANY>
 %%% @doc
 %%%
-%%% @end
+%%% @
 %%% Created : 22. Dec 2016 14:35
 %%%-------------------------------------------------------------------
 -module(mod_search).
@@ -71,7 +71,7 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call({command, search}, _From, State) ->
-    NewState = State#state{data = <<"My search data">>},
+    NewState = State#state{data = <<"My search 2">>},
     {reply, NewState, State}.
 
 %%--------------------------------------------------------------------
@@ -134,6 +134,7 @@ terminate(_Reason, _State) ->
     Extra :: term()) ->
     {ok, NewState :: #state{}} | {error, Reason :: term()}).
 code_change(_OldVsn, State, _Extra) ->
+    io:format("code reloaded (~w)~n", [self()]),
     {ok, State}.
 
 %%%===================================================================
