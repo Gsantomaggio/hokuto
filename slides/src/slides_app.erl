@@ -30,6 +30,9 @@ start(_StartType, _StartArgs) ->
             {"/wsmonitor", ws_monitor, []},
             {"/rest/search", rest_search, []},
             {"/rest/publish", rest_rabbitmq, []},
+            {"/rest/info", rest_info, []},
+
+            
             {"/[...]", cowboy_static, {priv_dir, slides, "",
                 [{mimetypes, cow_mimetypes, all}]}}
         ]}

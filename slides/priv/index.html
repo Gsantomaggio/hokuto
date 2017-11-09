@@ -21,10 +21,9 @@
     }
     .chart-container {
       width: 80%;
-      margin-left: 40px;
-      margin-right: 40px;
-      margin-bottom: 40px;
-
+      margin-left: 30px;
+      margin-right: 30px;
+    
     }
     .container {
       display: flex;
@@ -106,8 +105,8 @@
            var data = $.parseJSON(evt.data);
            $.each(data, function(i, item) {
              $('<tr>').html(
-             "<td>" + data[i].node + "</td><td>" + data[i].processes + "</td><td>" + bytesToSize(data[i].memory.total) + "</td><td>" + bytesToSize(data[i].memory.processes) +"</td><td>" + bytesToSize(data[i].memory.processes_used) +"</td>"+
-             "<td>" +bytesToSize(data[i].memory.system) + "</td><td>" + bytesToSize(data[i].memory.atom_used) +"</td><td>" +((data[i]["web_socket_connected"] == undefined) ? "": data[i]["web_socket_connected"]) +"</td><td>" +((data[i]["total_web_sockets"] == undefined) ? "": data[i]["total_web_sockets"]) +"</td>"
+             "<td>" + data[i].node + "</td><td>" + data[i].processes + "</td><td>" + data[i].memory.total + "</td><td>" + data[i].memory.processes +"</td><td>" + data[i].memory.processes_used +"</td>"+
+             "<td>" +data[i].memory.system + "</td><td>" + bytesToSize(data[i].memory.atom_used) +"</td><td>" +((data[i]["web_socket_connected"] == undefined) ? "": data[i]["web_socket_connected"]) +"</td><td>" +((data[i]["total_web_sockets"] == undefined) ? "": data[i]["total_web_sockets"]) +"</td>"
 
              ).appendTo('#nodes_body');
             });
@@ -124,10 +123,11 @@
                   
             }
 
-            data_chart.push(ws_connected_count)
-            if (data_chart.length > 30){
+            if (data_chart.length > 120){
               data_chart.shift();
             }
+            data_chart.push(ws_connected_count)
+ 
             chart.update();
           
             $('#ws_connected_count').text("Cluster active users: " + ws_connected_count);
@@ -157,10 +157,15 @@
       };
 
       function createConfig(details, data) {
+        l=[];
+        for (var i = 0; i < 120; i++) {
+              l.push('S'+i);
+        }
+
         return {
           type: 'line',
           data: {
-            labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7','S8','S9','S10','S11','S12','S13','S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25','S26','S27','S28','S29','S30' ],
+            labels: l,
 
             datasets: [{
               label: 'Active Users',
@@ -184,14 +189,15 @@
       window.onload = function() {
         var container = document.querySelector('.container');
         var steppedLineSettings = [{
-          steppedLine: false,
+          steppedLine: true,
           label: 'Active users',
-          color: window.chartColors.red
+          color: window.chartColors.yellow
         }];
         steppedLineSettings.forEach(function(details) {
           var div = document.createElement('div');
           div.classList.add('chart-container');
           var canvas = document.createElement('canvas');
+          canvas.height = 90;
           div.appendChild(canvas);
           container.appendChild(div);
           var ctx = canvas.getContext('2d');
@@ -211,7 +217,7 @@
         <ul>
             <li> <h1> Distributed applications with BEAM </h1>
             <h2>
-            <li> - Gabriele - @gsantomaggio</li>
+            <li> - @gsantomaggio <a href="/metal.jpeg" target="_blank">-></a></li>
             <li> - RabbitMQ contributor/ supporter</li>
             <li> - Co-author of RabbitMQ Cookbook</li>
             </h2>
@@ -221,7 +227,7 @@
             <h2>
             <li> - Concurrency</li>
             <li> - Distribution</li>
-            <li> - Supervisor </li>
+            <li> - Supervisors </li>
             </h2>
             </li>
 
@@ -241,11 +247,9 @@
             <li> - epmd</li>
             </h2></li>
 
-            <li> <h1> Code !! </h1>
-            <h2>
-            <li> - Show  </li>
-            <li> - us </li>
-            <li> - the code</li>
+            <li> <h1> Scaling !! Scaling !! <a href="/nodes.jpg" target="_blank">(nodes)</a> <a href="/cluster.jpg" target="_blank">(cluster)</a> </h1>
+            <div class="container" style="width: 100%;" >
+            </div>
             </h2></li>
 
             <li> <h1> OTP - Distributed calls </h1>
@@ -258,8 +262,12 @@
             <li> <h1> Distributed calls in this presentation </h1>
             <h2>
             <li> - gen_server </li>
-            <li> - gen_server:multi_call(..)</li>
-            <li> - gen_server:abcast(..) </li>
+           
+            <li> - gen_server:multi_call  <a href=" https://github.com/Gsantomaggio/hokuto/blob/erlang-elixir_meetup/slides/src/cluster_info.erl#L32
+" target="_blank">(...)</a> </li>
+
+
+            <li> - gen_server:abcast <a href="https://github.com/Gsantomaggio/hokuto/blob/erlang-elixir_meetup/slides/src/ws_handler.erl#L15" target="_blank">(...)</a> </li> </li>
             </h2></li>
 
             
@@ -274,14 +282,23 @@
             <h2>
             <li> - RabbitMQ </li>
             <li> - TCP Connection </li>
-            <li> - Message: <input type="text" id="edt_msg"></input> <button id="btn_send" type="button">Send</button> <label id="lbl_result" style="font-size: 20px"></label></li>
+            <li> - Message: <input type="text" id="edt_msg"></input> <button id="btn_send" type="button">Send</button> <label id="lbl_result" style="font-size: 20px"> </label></li>
             </h2></li>
+
+            <li> <h1> Ok Cool, but can I use it? </h1>
+            <h2>
+            <li> - Elixir is growing </li>
+            <li> - In Italy is growing the community </li>
+            <li> - Companies moved/ are moving to BEAM <a href="/companies.html" target="_blank">(...)</a></li>
+            </h2></li>
+
 
             <li> <h1> Thank you. Questions </h1>
             <h2>
             <li> - beam-italia.slack.com </li>
-            <li> - @beam_italia </li>
             <li> - @gsantomaggio / blog  </li>
+            <li> - ESL is hiring .. </li>
+
 
             </h2></li>
   
@@ -296,7 +313,7 @@
       <td style="border: 0px solid yellow;"><span id="ws_status"></span></td>
       <td style="border: 0px solid yellow;"><span id="ws_connected_count"></span></td>
       <td style="border: 0px solid yellow;"><span id="ws_total_count"></span></td>
-        <td style="border: 0px solid yellow;"><span id="cluster_nodes"></span></td>
+      <td style="border: 0px solid yellow;"><span id="cluster_nodes"></span></td>
     
       </tr>
     </table>
@@ -314,7 +331,7 @@
           <th rowspan="2">Active Users</th>
           <th rowspan="2">Log Users</th>
         </tr>
-        <tr style="background-color: #363636">
+        <tr>
           <th>Total</th>
           <th>Processes</th>
           <th>Processes Used</th>
@@ -327,8 +344,7 @@
     </table>
 </div>
 
-<div class="container" style="width: 100%; height: 100px;" >
-</div>
+
  
 
 

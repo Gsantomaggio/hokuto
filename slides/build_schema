@@ -49,7 +49,7 @@ center "    Erlang-HTTP-Cluster"
 hlcl
 hr
 lineDown
-center "    RABBITMQ-CLUSTER"
+center "    RABBITMQ-CLUSTER-on-K8s"
 hlcl
 hr
 lineDown
