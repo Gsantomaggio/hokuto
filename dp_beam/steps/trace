@@ -1,0 +1,65 @@
+%%% LOCAL TRACE
+dbg:start().
+dbg:tracer().
+dbg:tpl(gg,handle_call, x).
+dbg:p(all, c).
+
+%%% TRACE TO FILE
+dbg:start().
+dbg:tracer(port,dbg:trace_port(file,"/tmp/rmqtrace_test2")).
+dbg:tpl(gg,handle_call, x).
+dbg:p(all, c).
+------
+erl -eval 'dbg:trace_client(file, "/tmp/rmqtrace_test2").' > rmq
+
+
+
+%%% REMOTE TRACE
+dbg:start().
+dbg:tracer().
+dbg:n(dp_beam@mac).
+dbg:tpl(gg,handle_call, x).
+dbg:p(all, c).
+-----
+show: erlang:node(PID). ex: erlang:node(<8195.581.0>).
+
+
+
+
+
+
+
+
+
+%%% TCP TRACE
+dbg:start().
+dbg:tracer(port, dbg:trace_port(ip,4711)).
+dbg:tpl(gg,handle_call, x).
+dbg:p(all, c).
+--- Open another shell and
+dbg:trace_client(ip, {"mac", 4711}).
+
+
+%%% LOCAL TRACE file
+dbg:start().
+dbg:tracer().
+dbg:tpl(gg,handle_call, x).
+dbg:p(all, c).
+
+
+
+
+%% REMOTE Shell + TCP
+erl -sname mynode  -remsh dp_beam@mac
+
+dbg:start().
+dbg:tracer(port, dbg:trace_port(ip,4711)).
+dbg:tpl(gg,handle_call, x).
+dbg:p(all, c).
+
+--- Open another shell and
+erl -sname client_trace
+dbg:trace_client(ip, {"mac", 4711}).
+
+
+

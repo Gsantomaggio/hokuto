@@ -1,0 +1,72 @@
+
+
+self(). %% check the PID
+F = fun() ->
+timer:sleep(5000),
+exit(reason) end.
+
+
+length(erlang:processes()).
+PID = spawn(F).
+length(erlang:processes()).
+is_process_alive(PID).
+process_info(PID).
+is_process_alive(PID).
+length(erlang:processes()).
+self(). %% check the PID HERE it is the same
+
+====================================================================================================
+spwan_link
+
+
+FIRSTPID= self().
+is_process_alive(FIRSTPID).
+
+FL = fun() ->
+timer:sleep(5000),
+io:format("going to die, and you will die with me!!!!! hahahahah ~n~n",[]),
+exit(reason) end.
+
+PID=spawn(FL).
+link(PID).
+process_info(PID).
+%% WAIT
+SECONDPID= self().
+is_process_alive(FIRSTPID).
+is_process_alive(SECONDPID).
+
+
+
+%% Its important to note that link(spawn(Function)) or link(spawn(M,F,A)) happens in more than one step.
+%% In some cases, it is possible for a process to die before the link has been set up and then provoke unexpected behavior.
+%% For this reason, the function spawn_link/1-3 has been added to the language
+
+spawn_link(FL).
+
+self().
+====================================================================================================
+
+trap_exit
+
+self().
+
+process_flag(trap_exit, true).
+
+process_info(self()). %% Check now the messages
+
+
+FT = fun() ->
+timer:sleep(5000),
+io:format("going to die, you won't die with me :(((",[]),
+exit(reason) end.
+
+PID= spawn_link(FT).
+process_info(PID). %% Check the processes info
+
+%%% let's see what's happening here!!
+
+process_info(self()). %% message queue
+
+
+flush() %% the way to flush the messages
+

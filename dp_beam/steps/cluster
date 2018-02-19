@@ -1,0 +1,10 @@
+%% remote shell
+erl -sname mynode  -remsh dp_beam@mac
+
+check the cluster [nodes() | node()].
+erl -sname mynode  -remsh dp_beam@mac -hidden
+check again the cluster [nodes() | node()].
+
+
+
+erl -sname mynode  -remsh dp_beam@mac -hidden -setcookie un_cookie_a_caso

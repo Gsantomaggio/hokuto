@@ -1,0 +1,50 @@
+%%%simple example
+process_flag(trap_exit, true).
+
+FM= fun R()->receive
+{msg, MSG} -> io:format("got message:~p~n",[MSG]), R();
+{close} -> io:format("Goodbye:~n",[])
+end end.
+
+
+PID= spawn_link(FM).
+
+PID ! {msg, "first message"}.
+PID ! {msg, "I am so cool"}.
+process_info(PID).
+
+erlang:monitor(process, PID).
+
+exit(PID, "TI KILLO").
+
+process_info(self()). %%%%% 2 messages 1 for exit and one for down
+
+===
+
+Create an example with distributed monitoring
+erl -sname node2
+
+FM= fun R()->receive
+{msg, MSG} -> io:format("got message:~p~n",[MSG]), R();
+{close} -> io:format("Goodbye:~n",[])
+end end.
+register(myproc, spawn(FM)).
+
+
+
+erl -sname node1
+net_kernel:connect(node2@mac).
+MONITOR= fun R()->
+erlang:monitor(process,{myproc, node2@mac}),
+io:format("Start remote monitor",[]),
+receive
+{'DOWN', MonitorReference, process, Pid, Reason} -> io:format("Received DOWN from Pid:~p, Reason:~p  ~n",[Pid,Reason])
+end end.
+
+spawn(MONITOR).
+
+==============
+
+back node1 ---> exit(whereis(myproc),"KILL").
+
+

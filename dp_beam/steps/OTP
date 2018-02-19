@@ -1,0 +1,4 @@
+1 ---
+Try to send a message to no existing PID
+<0.266.0> ! ciao.
+gen_server:call(<0.266.0>, ciao). %%% error here
