@@ -39,7 +39,8 @@ sup_f() ->
     end.
 
 
-
+%% try with exit(PID, normal)
+%% and with exit(PID, my_error)
 spawn_sup_f() -> spawn(fun sup_f/0).
 
 %% diffent between process flag and not, chain delete
@@ -57,7 +58,6 @@ sup_f_no() ->
 spawn_sup_f_no() -> spawn(fun sup_f_no/0).
 
 monitor_f(Pid) ->
-
     Ref = erlang:monitor(process, Pid),
     io:format("Monitor Ref:~p ~n", [Ref]),
     receive
@@ -67,3 +67,4 @@ monitor_f(Pid) ->
 
 
 spawn_with_dictonary() -> proc_lib:spawn(fun f/0).
+

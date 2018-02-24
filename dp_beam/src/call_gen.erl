@@ -16,7 +16,8 @@
 call_gen_raise_timeout() ->
     gg_s:from_detail().
 
-spawn_call() -> process_flag(trap_exit, true),
+spawn_call() ->
+    process_flag(trap_exit, true),
     PID = spawn_link(?MODULE, call_gen_raise_timeout, []),
     io:format("Pid caller: ~w", [PID]),
     receive

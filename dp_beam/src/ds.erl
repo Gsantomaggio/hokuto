@@ -48,5 +48,6 @@ get_status() -> lists:sort([{erlang:process_info(P, [status]), P}
 %% length(erlang:processes()).
 %% execute using +S 1 to 4 rel/vm.args
 %% note about getstatus and process_info with partial result
+%% describe the status
 
 run_them(N) -> spawn_them(N), get_status().
