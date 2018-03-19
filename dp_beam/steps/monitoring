@@ -45,6 +45,6 @@ spawn(MONITOR).
 
 ==============
 
-back node1 ---> exit(whereis(myproc),"KILL").
+back node2 ---> exit(whereis(myproc),"KILL").
 
 
