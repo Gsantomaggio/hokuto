@@ -1,0 +1,26 @@
+
+processes
+message passing
+
+back to processes by redesign trap_exit using message passing
+handle the normal shutdown and the kill
+restart it
+
+
+monitoring
+
+USE THE blackboard to show the steps
+
+When use the chain links and whn not, example resource to a web-server connection
+or socket connection. When the connection is dropped all the chain must be dropped.
+
+Speak about the Dynamic Typing, why the spec is important
+
+Implement an Elixir example using Kafka and gen_statem for lazy initialization
+
+HIBERNATE process
+
+( enable history bash )
+
+recon
+erlangpl

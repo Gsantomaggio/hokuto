@@ -44,7 +44,8 @@ maybe_publish(_, _, Req, _Value) ->
 
 publish(MSG, Req) ->
     {_Status, Host} = application:get_env(slides, rabbitmq_host),
-    {ok, Connection} = amqp_connection:start(#amqp_params_network{host = Host}),
+    {_Status, Port} = application:get_env(slides, rabbitmq_port),
+    {ok, Connection} = amqp_connection:start(#amqp_params_network{host = Host, port = Port}),
     {ok, Channel} = amqp_connection:open_channel(Connection),
     Declare = #'queue.declare'{queue = <<"presentation_queue">>},
     #'queue.declare_ok'{} = amqp_channel:call(Channel, Declare),

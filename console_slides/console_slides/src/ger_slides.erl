@@ -1,13 +1,13 @@
 %%%-------------------------------------------------------------------
-%%% @author gabriele
-%%% @copyright (C) 2016, <COMPANY>
+%%% @author GaS
+%%% @copyright (C) 2017, <COMPANY>
 %%% @doc
 %%%
-%%% @
-%%% Created : 22. Dec 2016 14:35
+%%% @end
+%%% Created : 03. Sep 2017 15:42
 %%%-------------------------------------------------------------------
--module(mod_search).
--author("gabriele").
+-module(ger_slides).
+-author("GaS").
 
 -behaviour(gen_server).
 
@@ -24,7 +24,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {data}).
+-record(state, {}).
 
 %%%===================================================================
 %%% API
@@ -60,7 +60,6 @@ start_link() ->
     {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    io:format("mod_search started (~w)~n", [self()]),
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
@@ -70,9 +69,16 @@ init([]) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
-handle_call({command, search}, _From, State) ->
-    NewState = State#state{data = <<"My search 2">>},
-    {reply, NewState, State}.
+-spec(handle_call(Request :: term(), From :: {pid(), Tag :: term()},
+    State :: #state{}) ->
+    {reply, Reply :: term(), NewState :: #state{}} |
+    {reply, Reply :: term(), NewState :: #state{}, timeout() | hibernate} |
+    {noreply, NewState :: #state{}} |
+    {noreply, NewState :: #state{}, timeout() | hibernate} |
+    {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
+    {stop, Reason :: term(), NewState :: #state{}}).
+handle_call(_Request, _From, State) ->
+    {reply, ok, State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -85,9 +91,8 @@ handle_call({command, search}, _From, State) ->
     {noreply, NewState :: #state{}} |
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-handle_cast(_From, State) ->
+handle_cast(_Request, State) ->
     {noreply, State}.
-
 
 %%--------------------------------------------------------------------
 %% @private
@@ -134,7 +139,6 @@ terminate(_Reason, _State) ->
     Extra :: term()) ->
     {ok, NewState :: #state{}} | {error, Reason :: term()}).
 code_change(_OldVsn, State, _Extra) ->
-    io:format("code reloaded (~w)~n", [self()]),
     {ok, State}.
 
 %%%===================================================================

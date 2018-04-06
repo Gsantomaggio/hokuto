@@ -1,18 +1,18 @@
 %%%-------------------------------------------------------------------
 %%% @author gabriele
-%%% @copyright (C) 2016, <COMPANY>
+%%% @copyright (C) 2017, <COMPANY>
 %%% @doc
 %%%
-%%% @
-%%% Created : 22. Dec 2016 14:35
+%%% @end
+%%% Created : 11. Dec 2017 07:54
 %%%-------------------------------------------------------------------
--module(mod_search).
+-module(mem_bin).
 -author("gabriele").
 
 -behaviour(gen_server).
 
 %% API
--export([start_link/0]).
+-export([start_link/0, pt/0, count/0, pt/1, concat_bin/2, append_bin/1, reset_bin/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -24,11 +24,29 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {data}).
+-record(state, {ets_id = ets:new(mytable, [bag]), binary = <<>>}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+pt(N) ->
+    [gen_server:call(?MODULE, {insert_ets, {X, "Element" ++ integer_to_list(X)}}) || X <- lists:seq(1, N)].
+pt() ->
+    pt(10000).
+
+count() -> gen_server:call(?MODULE, {count_ets}).
+
+concat_bin(N, Res) when N == 0 -> Res;
+concat_bin(N, Res) ->
+    concat_bin(N - 1, <<Res/binary, 1>>).
+
+append_bin(N) ->
+    Res = concat_bin(N, <<>>),
+    gen_server:call(?MODULE, {append_bin, Res}).
+
+reset_bin() -> gen_server:call(?MODULE, {reset_bin}).
+
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -60,7 +78,6 @@ start_link() ->
     {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    io:format("mod_search started (~w)~n", [self()]),
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
@@ -70,9 +87,30 @@ init([]) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
-handle_call({command, search}, _From, State) ->
-    NewState = State#state{data = <<"My search 2">>},
-    {reply, NewState, State}.
+-spec(handle_call(Request :: term(), From :: {pid(), Tag :: term()},
+    State :: #state{}) ->
+    {reply, Reply :: term(), NewState :: #state{}} |
+    {reply, Reply :: term(), NewState :: #state{}, timeout() | hibernate} |
+    {noreply, NewState :: #state{}} |
+    {noreply, NewState :: #state{}, timeout() | hibernate} |
+    {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
+    {stop, Reason :: term(), NewState :: #state{}}).
+handle_call({insert_ets, {K, V}}, _From, State = #state{ets_id = EtsId}) ->
+    ets:insert(EtsId, {K, V}),
+    {reply, ok, State};
+handle_call({count_ets}, _From, State = #state{ets_id = EtsId}) ->
+    Len = ets:info(EtsId, size),
+    {reply, {Len, 0}, State};
+handle_call({append_bin, Value}, _From, State = #state{binary = Bin}) ->
+    Res = <<Bin/binary, Value/binary>>,
+    io:format("Size ~p~n: ", [byte_size(Res)]),
+    {reply, ok, State#state{binary = Res}};
+handle_call({reset_bin}, _From, State) ->
+    Res = <<>>,
+    io:format("Size reset ~p~n: ", [byte_size(Res)]),
+    {reply, ok, State#state{binary = Res}}.
+
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -85,9 +123,8 @@ handle_call({command, search}, _From, State) ->
     {noreply, NewState :: #state{}} |
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-handle_cast(_From, State) ->
+handle_cast(_Request, State) ->
     {noreply, State}.
-
 
 %%--------------------------------------------------------------------
 %% @private
@@ -134,7 +171,6 @@ terminate(_Reason, _State) ->
     Extra :: term()) ->
     {ok, NewState :: #state{}} | {error, Reason :: term()}).
 code_change(_OldVsn, State, _Extra) ->
-    io:format("code reloaded (~w)~n", [self()]),
     {ok, State}.
 
 %%%===================================================================

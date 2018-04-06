@@ -33,6 +33,14 @@ cluster_status() ->
     % Distributed call
     {Replies, BadNodes} = gen_server:multi_call([node() | nodes()],
         server_info, {command, info, node()}, 5000),
-    
     to_json(Replies, BadNodes).
+
+
+    % lists:foldr(fun({_, {state, _, _, WC, WT}}, {WCSum, WTSum}) ->
+    %     {(WC + WCSum), (WT + WTSum)} end, {0, 0}, Replies),
+
+    % {WCs,WTs} = lists:unzip([{WC, WT} || {_, {state, _, _, WC, WT}} <- L]),
+    % {lists:sum(WCs), lists:sum(WTs)}.
+
+
 

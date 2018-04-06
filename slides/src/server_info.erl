@@ -67,17 +67,12 @@ init([]) ->
 
 % sync call
 handle_call({command, info, _NodeFrom}, _From, State) ->
-    NewState = State#state{memory = erlang:memory(), processes = length(erlang:processes())},
+    NewState = State#state{memory = erlang:memory(), 
+               processes = length(erlang:processes())},
     {reply, NewState, State}.
 
 
-
-
-
-
-
-
-
+% async call
 handle_cast({new_client}, State) ->
     NewState = State#state{web_socket_connected = State#state.web_socket_connected + 1,
         total_web_sockets = State#state.total_web_sockets + 1},

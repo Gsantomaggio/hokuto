@@ -1,0 +1,15 @@
+.eunit
+deps
+*.o
+*.beam
+*.plt
+erl_crash.dump
+ebin/*.beam
+.concrete/DEV_MODE
+.rebar
+_rel
+ebin
+.idea
+*.d
+*.iml
+.erlang.mk

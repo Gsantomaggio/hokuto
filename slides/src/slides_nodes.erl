@@ -123,7 +123,7 @@ handle_info({nodedown, Node}, State) ->
     gproc:send({p, l, ?WSKey}, {self(), ?WSKey, Msg}),
     {noreply, State};
 handle_info({timeout, _Ref, _Msg}, State) ->
-    etcd2:join(),
+   %   etcd2:join(),
     {noreply, State}.
 
 

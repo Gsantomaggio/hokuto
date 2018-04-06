@@ -1,0 +1,62 @@
+
+process_flag(trap_exit, true).
+
+FM= fun R()->receive
+{msg, MSG} -> io:format("got message:~p~n",[MSG]), R();
+{close} -> io:format("Goodbye:~n",[])
+end end.
+
+
+PID= spawn_link(FM).
+
+PID ! {msg, "first message"}.
+PID ! {msg, "I am so cool"}.
+process_info(PID).
+%%%%
+PID ! {close}.
+
+process_info(PID).
+
+process_info(self()). %% {messages,[{'EXIT',<0.68.0>,normal}]},
+
+
+STOP and RE-EXECUTE USING:
+PID= spawn_link(FM).
+exit(PID, "can you please die").
+process_info(self()). %% see the different exit message
+
+=====================================================
+
+time out
+
+process_flag(trap_exit, true).
+
+FTO= fun R()->receive
+{msg, MSG} -> io:format("got message:~p~n",[MSG]), R();
+{close} -> io:format("Goodbye:~n",[])
+after 5000 ->
+  io:format("No messages in 5 seconds, I cannot waste my time with you, I leave:~n",[]), ok
+end end.
+
+PID1= spawn_link(FTO).
+
+PID1 ! {msg, "first message"}.
+wait...
+is_process_alive(PID1).
+
+
+====================================
+Create a leak
+
+FM= fun R()->receive
+{msg, MSG} -> io:format("got message:~p~n",[MSG]), R();
+{close} -> io:format("Goodbye:~n",[])
+end end.
+
+
+PID= spawn_link(FM).
+
+PID ! {undef_pattern, "first message"}. %%% NOTE NO ERRORS RAISED
+
+%%% where are the messages ?
+process_info(PID).

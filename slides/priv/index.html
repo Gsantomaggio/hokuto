@@ -10,10 +10,28 @@
     <link rel="stylesheet" href="css/unslider-dots.css">
 
     <link rel="stylesheet" href="css/slides.css">
-
-
    
-
+   <script src="js/Chart.bundle.js"></script>
+   <script src="js/utils.js"></script>
+    <style>
+    canvas {
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+    }
+    .chart-container {
+      width: 80%;
+      margin-left: 30px;
+      margin-right: 30px;
+    
+    }
+    .container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    </style>
     <script type="text/javascript">
       var websocket;
       $(document).ready(init);
@@ -71,6 +89,16 @@
       function onClose(evt) { 
           $('#ws_status').text("Websocket status: Disconnect");
       };  
+      
+      function bytesToSize(bytes) {
+         var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+         if (bytes == 0) return '0 Byte';
+         var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+         return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+       };
+
+     var data_chart = [];
+
       function onMessage(evt) { 
            
            $('#nodes_table tbody').empty();
@@ -78,7 +106,7 @@
            $.each(data, function(i, item) {
              $('<tr>').html(
              "<td>" + data[i].node + "</td><td>" + data[i].processes + "</td><td>" + data[i].memory.total + "</td><td>" + data[i].memory.processes +"</td><td>" + data[i].memory.processes_used +"</td>"+
-             "<td>" +data[i].memory.system + "</td><td>" + data[i].memory.atom_used +"</td><td>" +((data[i]["web_socket_connected"] == undefined) ? "": data[i]["web_socket_connected"]) +"</td><td>" +((data[i]["total_web_sockets"] == undefined) ? "": data[i]["total_web_sockets"]) +"</td>"
+             "<td>" +data[i].memory.system + "</td><td>" + bytesToSize(data[i].memory.atom_used) +"</td><td>" +((data[i]["web_socket_connected"] == undefined) ? "": data[i]["web_socket_connected"]) +"</td><td>" +((data[i]["total_web_sockets"] == undefined) ? "": data[i]["total_web_sockets"]) +"</td>"
 
              ).appendTo('#nodes_body');
             });
@@ -88,10 +116,19 @@
            for (i = 0; i < data.length; i++) {
                if (data[i]["web_socket_connected"] != undefined)
                   ws_connected_count += data[i].web_socket_connected;  
-               if (data[i]["total_web_sockets"] != undefined)
-                  ws_total_count += data[i].total_web_sockets;  
+                  
+               if (data[i]["total_web_sockets"] != undefined){
+                  ws_total_count += data[i].total_web_sockets;
+                }
                   
             }
+
+            if (data_chart.length > 120){
+              data_chart.shift();
+            }
+            data_chart.push(ws_connected_count)
+ 
+            chart.update();
           
             $('#ws_connected_count').text("Cluster active users: " + ws_connected_count);
             $('#ws_total_count').text("Cluster log users:" + ws_total_count);
@@ -107,17 +144,67 @@
 		var datestring = ("0" + d.getDate()).slice(-2) + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +
 	    d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
 
-		return datestring;
+    		return datestring;
       }
 
       function showScreen(txt) {
-
-
-          $('#output').html("Cluster info: " + txt);
+        $('#output').html("Cluster info: " + txt);
       };
+  
       function clearScreen() 
       { 
           $('#output').html("");
+      };
+
+      function createConfig(details, data) {
+        l=[];
+        for (var i = 0; i < 120; i++) {
+              l.push('S'+i);
+        }
+
+        return {
+          type: 'line',
+          data: {
+            labels: l,
+
+            datasets: [{
+              label: 'Active Users',
+              steppedLine: details.steppedLine,
+              data: data,
+              borderColor: details.color,
+              fill: false,
+            }]
+          },
+          options: {
+            responsive: true,
+            title: {
+              display: true,
+              text: details.label,
+            }
+          }
+        };
+      }
+
+      var chart;
+      window.onload = function() {
+        var container = document.querySelector('.container');
+        var steppedLineSettings = [{
+          steppedLine: true,
+          label: 'Active users',
+          color: window.chartColors.yellow
+        }];
+        steppedLineSettings.forEach(function(details) {
+          var div = document.createElement('div');
+          div.classList.add('chart-container');
+          var canvas = document.createElement('canvas');
+          canvas.height = 90;
+          div.appendChild(canvas);
+          container.appendChild(div);
+          var ctx = canvas.getContext('2d');
+          var config = createConfig(details, data_chart);
+          chart = new Chart(ctx, config);
+          chart.height = 10;
+        });
       };
 
 
@@ -125,26 +212,30 @@
 
 </head>
 
-<div id="container_info">
-    <table id="ws_table"> 
-      <tr>
-      <td style="border: 0px solid yellow;"><span id="ws_status"></span></td>
-      <td style="border: 0px solid yellow;"><span id="ws_connected_count"></span></td>
-      <td style="border: 0px solid yellow;"><span id="ws_total_count"></span></td>
-        <td style="border: 0px solid yellow;"><span id="cluster_nodes"></span></td>
-    
-      </tr>
-    </table>
-</div>
-
 <div id="container" class="banner">
     <div class="default-slider">
         <ul>
             <li> <h1> Distributed applications with BEAM </h1>
             <h2>
-            <li> - Gabriele Santomaggio - @gsantomaggio</li>
+            <li> - @gsantomaggio <a href="/metal.jpeg" target="_blank">-></a></li>
             <li> - RabbitMQ contributor/ supporter</li>
             <li> - Co-author of RabbitMQ Cookbook</li>
+            </h2>
+            </li>
+
+            <li> <h1> Erlang/Elixir ? </h1>
+            <h2>
+            <li> - Concurrency</li>
+            <li> - Distribution</li>
+            <li> - Supervisors </li>
+            </h2>
+            </li>
+
+            <li> <h1> Beam VM </h1>
+            <h2>
+            <li> - Message Passing</li>
+            <li> - Processes</li>
+            <li> - No Shared Memory</li>
             </h2>
             </li>
 
@@ -152,8 +243,13 @@
             <li> <h1> Distributed Erlang - Base concepts </h1>
             <h2>
             <li> - Nodes (full-mesh) <a href="/distributed.html" target="_blank">(example)</a> </li>
-            <li> - .erlang.cookie</li>
+            <li> - Net Kernel</li>
             <li> - epmd</li>
+            </h2></li>
+
+            <li> <h1> Scaling !! Scaling !! <a href="/nodes.jpg" target="_blank">(nodes)</a> <a href="/cluster.jpg" target="_blank">(cluster)</a> </h1>
+            <div class="container" style="width: 100%;" >
+            </div>
             </h2></li>
 
             <li> <h1> OTP - Distributed calls </h1>
@@ -166,17 +262,15 @@
             <li> <h1> Distributed calls in this presentation </h1>
             <h2>
             <li> - gen_server </li>
-            <li> - gen_server:multi_call(..)</li>
-            <li> - gen_server:abcast(..) </li>
+           
+            <li> - gen_server:multi_call  <a href=" https://github.com/Gsantomaggio/hokuto/blob/erlang-elixir_meetup/slides/src/cluster_info.erl#L32
+" target="_blank">(...)</a> </li>
+
+
+            <li> - gen_server:abcast <a href="https://github.com/Gsantomaggio/hokuto/blob/erlang-elixir_meetup/slides/src/ws_handler.erl#L15" target="_blank">(...)</a> </li> </li>
             </h2></li>
 
-            <li> <h1> Add new feature </h1>
-            <h2>
-            <li> - Search example </li>
-            <li> - Add nodes</li>
-            <li> - Distributed search</li>
-            </h2></li>
-
+            
             <li> <h1> Nodes type family </h1>
             <h2>
             <li> - Same type </li>
@@ -188,21 +282,24 @@
             <h2>
             <li> - RabbitMQ </li>
             <li> - TCP Connection </li>
-            <li> - Message: <input type="text" id="edt_msg"></input> <button id="btn_send" type="button">Send</button> <label id="lbl_result" style="font-size: 20px"></label></li>
+            <li> - Message: <input type="text" id="edt_msg"></input> <button id="btn_send" type="button">Send</button> <label id="lbl_result" style="font-size: 20px"> </label></li>
             </h2></li>
 
-            <li> <h1> Links</h1>
+            <li> <h1> Ok Cool, but can I use it? </h1>
             <h2>
-            <li> - @beam_italia </li>
-            <li> - @erlangsolutions </li>
+            <li> - Elixir is growing </li>
+            <li> - In Italy is growing the community </li>
+            <li> - Companies moved/ are moving to BEAM <a href="/companies.html" target="_blank">(...)</a></li>
+            </h2></li>
+
+
+            <li> <h1> Thank you. Questions </h1>
+            <h2>
             <li> - beam-italia.slack.com </li>
-            </h2></li>
+            <li> - @gsantomaggio / blog  </li>
+            <li> - ESL is hiring .. </li>
 
-            <li> <h1> Thank you </h1>
-            <h2>
-            <li> - Any questions ? </li>
-            <li> - @gsantomaggio </li>
-            <li> - Erlang Elixir Fac. Rome 7 April </li>
+
             </h2></li>
   
 
@@ -210,7 +307,17 @@
         <script>$('.default-slider').unslider();</script>
     </div>
 </div>
-
+<div id="container_info">
+    <table id="ws_table"> 
+      <tr>
+      <td style="border: 0px solid yellow;"><span id="ws_status"></span></td>
+      <td style="border: 0px solid yellow;"><span id="ws_connected_count"></span></td>
+      <td style="border: 0px solid yellow;"><span id="ws_total_count"></span></td>
+      <td style="border: 0px solid yellow;"><span id="cluster_nodes"></span></td>
+    
+      </tr>
+    </table>
+</div>
 
 
 
@@ -224,7 +331,7 @@
           <th rowspan="2">Active Users</th>
           <th rowspan="2">Log Users</th>
         </tr>
-        <tr style="background-color: #363636">
+        <tr>
           <th>Total</th>
           <th>Processes</th>
           <th>Processes Used</th>
@@ -238,6 +345,7 @@
 </div>
 
 
+ 
 
 
 </body>

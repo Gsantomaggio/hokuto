@@ -3,7 +3,11 @@ import pika
 from threading import Thread
 
 def on_message(ch, method, properties, body):
+    print "****** Message received!!********"
     print body
+    print "*****************************"
+    print " "
+
     
 def threaded_rmq(channel):
     result = channel.queue_declare(queue='presentation_queue')
@@ -13,7 +17,7 @@ def threaded_rmq(channel):
     channel.start_consuming()
 
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('172.17.8.101'))
+connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.99.100', 30672))
 channel = connection.channel()
 
 thread_rmq = Thread(target=threaded_rmq, args=(channel,))

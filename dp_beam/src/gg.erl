@@ -1,18 +1,18 @@
 %%%-------------------------------------------------------------------
 %%% @author gabriele
-%%% @copyright (C) 2016, <COMPANY>
+%%% @copyright (C) 2017, <COMPANY>
 %%% @doc
 %%%
-%%% @
-%%% Created : 22. Dec 2016 14:35
+%%% @end
+%%% Created : 12. Dec 2017 20:40
 %%%-------------------------------------------------------------------
--module(mod_search).
+-module(gg).
 -author("gabriele").
 
 -behaviour(gen_server).
 
 %% API
--export([start_link/0]).
+-export([start_link/0, call/1, cast/1, calls/1, casts/1, my_call/1, does_not_match_call/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -24,11 +24,42 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {data}).
+-record(state, {number_of_async = 0, number_of_sync = 0}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+%% note about process info and dictornary
+%% back to ds_processes:spawn_with_dictonary
+
+
+calls(N) ->
+    [call(X) || X <- lists:seq(1, N)].
+
+casts(N) ->
+    [cast(X) || X <- lists:seq(1, N)].
+
+
+
+call(N) ->
+    gen_server:call(?MODULE, {sync, N}, 20000).
+
+
+cast(N) ->
+    gen_server:cast(?MODULE, {async, N}).
+
+
+
+my_call(N) ->
+    gen_server:call(?MODULE, {mycall, N}, 20000).
+
+
+
+%%% different between this and the standard message passing ( this won't leak)
+does_not_match_call(N) ->
+    gen_server:call(?MODULE, {does_not_match, N}, 1000).
+
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -60,7 +91,7 @@ start_link() ->
     {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    io:format("mod_search started (~w)~n", [self()]),
+    io:format("My gg PID is: ~p~n", [self()]),
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
@@ -70,9 +101,27 @@ init([]) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
-handle_call({command, search}, _From, State) ->
-    NewState = State#state{data = <<"My search 2">>},
-    {reply, NewState, State}.
+-spec(handle_call(Request :: term(), From :: {pid(), Tag :: term()},
+    State :: #state{}) ->
+    {reply, Reply :: term(), NewState :: #state{}} |
+    {reply, Reply :: term(), NewState :: #state{}, timeout() | hibernate} |
+    {noreply, NewState :: #state{}} |
+    {noreply, NewState :: #state{}, timeout() | hibernate} |
+    {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
+    {stop, Reason :: term(), NewState :: #state{}}).
+handle_call({sync, Tasks}, _From, State = #state{number_of_sync = NS}) ->
+    io:format("CALL - doing call n:~p ~n", [Tasks]),
+    timer:sleep(2000),
+    io:format("CALL -finished call n:~p ~n", [Tasks]),
+    R = NS + 1,
+    io:format("Total SYNC:~p ~n", [R]),
+    {reply, ok, State#state{number_of_sync = R}};
+handle_call({mycall, MyValue}, _From, State = #state{number_of_sync = NS}) ->
+    io:format("mycall - doing MYCALL n:~p ~n", [MyValue]),
+    timer:sleep(2000),
+    io:format("mycall - doing MYCALL n:~p ~n", [MyValue]),
+    {reply, ok, State}.
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -85,9 +134,14 @@ handle_call({command, search}, _From, State) ->
     {noreply, NewState :: #state{}} |
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-handle_cast(_From, State) ->
-    {noreply, State}.
-
+handle_cast({async, Tasks}, State = #state{number_of_async  = NA}) ->
+    io:format("CAST- doing cast n:~p ~n", [Tasks]),
+    timer:sleep(1000),
+    io:format("CAST- finished cast n:~p ~n", [Tasks]),
+    R = NA + 1,
+    io:format("Total ASYNC:~p ~n", [R]),
+%% note about noreply !
+    {noreply, State#state{number_of_async = R}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -104,6 +158,7 @@ handle_cast(_From, State) ->
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
 handle_info(_Info, State) ->
+
     {noreply, State}.
 
 %%--------------------------------------------------------------------
@@ -119,7 +174,8 @@ handle_info(_Info, State) ->
 %%--------------------------------------------------------------------
 -spec(terminate(Reason :: (normal | shutdown | {shutdown, term()} | term()),
     State :: #state{}) -> term()).
-terminate(_Reason, _State) ->
+terminate(Reason, _State) ->
+    io:format("gg treminate reason:~w ~n",[Reason]),
     ok.
 
 %%--------------------------------------------------------------------
@@ -134,7 +190,6 @@ terminate(_Reason, _State) ->
     Extra :: term()) ->
     {ok, NewState :: #state{}} | {error, Reason :: term()}).
 code_change(_OldVsn, State, _Extra) ->
-    io:format("code reloaded (~w)~n", [self()]),
     {ok, State}.
 
 %%%===================================================================
