@@ -20,9 +20,10 @@ s(Status) ->
                     rn -> running;
                     g -> garbage_collecting
                 end,
+    P = erlang:processes(),            
     L = length(lists:filter(fun(X) ->
         erlang:process_info(X, [status]) == [{status, DecStatus}] end,
-        erlang:processes())),
+        P)),
     io:format("Status:~p len:~p ~n ", [Status, L]).
 
 

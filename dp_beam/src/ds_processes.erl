@@ -41,7 +41,17 @@ sup_f() ->
 
 %% try with exit(PID, normal)
 %% and with exit(PID, my_error)
+%% for example exit(list_to_pid("<0.650.0>"), my_errror).
+%% The "The sup PID" is always the same 'cause of trap_exit
+%% use always process info to check the status and show the links/mornitor flag
+%% process_info(list_to_pid( SPANNED_PID ),monitored_by). who is monitor
+%% process_info(list_to_pid( PID_Monitor  ),monitors). who is monitoring
+
 spawn_sup_f() -> spawn(fun sup_f/0).
+
+
+
+
 
 %% diffent between process flag and not, chain delete
 %% try to kill the super here to see the chain delete

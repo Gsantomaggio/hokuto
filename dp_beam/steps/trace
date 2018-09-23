@@ -25,12 +25,6 @@ show: erlang:node(PID). ex: erlang:node(<8195.581.0>).
 
 
 
-
-
-
-
-
-
 %%% TCP TRACE
 dbg:start().
 dbg:tracer(port, dbg:trace_port(ip,4711)).

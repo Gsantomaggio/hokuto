@@ -65,7 +65,7 @@ process_info(PID). %% Check the processes info
 
 %%% let's see what's happening here!!
 
-process_info(self()). %% message queue
+process_info(self(), message_queue_len). %% message queue
 
 
 flush() %% the way to flush the messages

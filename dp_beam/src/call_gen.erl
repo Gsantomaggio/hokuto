@@ -21,5 +21,5 @@ spawn_call() ->
     PID = spawn_link(?MODULE, call_gen_raise_timeout, []),
     io:format("Pid caller: ~w", [PID]),
     receive
-        M -> io:format("GOT MESSAGE: ~w", [M])
+        M -> io:format("GOT MESSAGE: ~w~n", [M])
     end.

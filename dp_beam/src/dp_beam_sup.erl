@@ -5,10 +5,10 @@
 -export([init/1]).
 
 start_link() ->
+	io:format("My supervisor id~w ~n:",[self()]),
 	supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 init([]) ->
-	io:format("My supervisor id~w:",[self()]),
 	Procs = [{fake_id,
 		{gg_s, start_link, []},
 		permanent,

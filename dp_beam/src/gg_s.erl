@@ -12,7 +12,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, getstatus/0, append_value/1, sum/2, from_detail/0]).
+-export([start_link/0, getstatus/0, append_value/1, sum/2, from_detail/0, stop_me/0, stop/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -33,6 +33,13 @@
 
 from_detail() ->
     gen_server:call(?MODULE, {from_detail}, 10000).
+
+stop_me() ->
+    gen_server:call(?MODULE, {stop_me}).
+
+stop() ->
+    gen_server:stop(?MODULE).
+
 
 sum(A, B) ->
     {NumberOfOperations, Result} = gen_server:call(?MODULE, {sum, A, B}),
@@ -78,7 +85,7 @@ start_link() ->
     {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    io:format("Supervired gen_server gg_s PID:~w~n", [self()]),
+    io:format("gen_s PID:~w~n", [self()]),
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
@@ -107,9 +114,16 @@ handle_call({sum, A, B}, _From, State = #state{number_of_operations = N}) ->
     {reply, {NO, Res}, State#state{number_of_operations = NO}};
 handle_call({from_detail}, From, State = #state{mystate = S}) ->
     {Pid, Tag} = From,
-    io:format("self pid ~p ~n~n fromPId ~p ~n~n Tag~w ~n", [process_info(self(), monitored_by), Pid , Tag]),
+    io:format("MYPID:~p~n monitored_by pid: ~p ~n~nFromPId ~p ~n~nTag~w ~nLinks~p ~n", 
+        [self(),process_info(self(), monitored_by), Pid , Tag, process_info(self(), links)]),
     timer:sleep(11000),
-    {reply, S, State}.
+    {reply, S, State};
+handle_call({stop_me}, _From, State) ->
+    {stop, "unkonw error, ", State}.
+   % {stop, {shutdown,"Stopped"}, State}. %% <-- Stop the gen_server, 
+   % {stop, {shutdown,"Stopped"}, "This is fom the caller", State}. %% <-- Stop the gen_server, and sed back a message to the caller
+   % {stop, "unkonw error, ", State}. %% <-- Stop the gen_server with an error, will chrash the caller 
+
 
 
 %%--------------------------------------------------------------------
@@ -157,7 +171,8 @@ handle_info(Info, State) ->
 %%--------------------------------------------------------------------
 -spec(terminate(Reason :: (normal | shutdown | {shutdown, term()} | term()),
     State :: #state{}) -> term()).
-terminate(_Reason, _State) ->
+terminate(Reason, _State) ->
+    io:format("the terminate is called, reason: ~p~n", [Reason]),
     ok.
 
 %%--------------------------------------------------------------------

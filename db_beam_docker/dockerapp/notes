@@ -1,0 +1,2 @@
+curl http://localhost:8627/api/get
+docker run -it -p 8627:8627 dockerapp:latest /bin/bash

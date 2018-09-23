@@ -1,0 +1,29 @@
+version: "2"
+services:
+  webapp:
+    environment:
+      - TCP_PORTS=8627,8099
+    networks:
+      - back
+    image: dockerapp
+    expose:
+      - 8627
+      - 8099
+    tty: true
+  lb:
+    image: dockercloud/haproxy
+    environment:
+      - MODE=tcp
+      - TIMEOUT= connect 300000, client 300000, server 300000
+    links:
+      - webapp
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+        - 8627:8627
+        - 8099:8099
+    networks:
+      - back
+
+networks:
+  back:
