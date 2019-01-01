@@ -12,8 +12,6 @@ dbg:p(all, c).
 ------
 erl -eval 'dbg:trace_client(file, "/tmp/rmqtrace_test2").' > rmq
 
-
-
 %%% REMOTE TRACE
 dbg:start().
 dbg:tracer().
