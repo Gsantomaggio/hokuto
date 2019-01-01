@@ -4,6 +4,7 @@ dbg:tracer().
 dbg:tpl(gg,handle_call, x).
 dbg:p(all, c).
 
+
 %%% TRACE TO FILE
 dbg:start().
 dbg:tracer(port,dbg:trace_port(file,"/tmp/rmqtrace_test2")).
@@ -11,6 +12,7 @@ dbg:tpl(gg,handle_call, x).
 dbg:p(all, c).
 ------
 erl -eval 'dbg:trace_client(file, "/tmp/rmqtrace_test2").' > rmq
+
 
 %%% REMOTE TRACE
 dbg:start().
