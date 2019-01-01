@@ -4,11 +4,6 @@ dbg:tracer().
 dbg:tpl(gg,handle_call, x).
 dbg:p(all, c).
 
-
-
-
-
-
 %%% TRACE TO FILE
 dbg:start().
 dbg:tracer(port,dbg:trace_port(file,"/tmp/rmqtrace_test2")).
